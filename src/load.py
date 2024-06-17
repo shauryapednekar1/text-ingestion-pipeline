@@ -1,5 +1,4 @@
 import glob
-import json
 import logging
 import multiprocessing
 import os
@@ -51,18 +50,25 @@ class Loader:
         self,
         dataset_directory,
         is_zipped,
-        output_location,
         unzip=True,
         autoloader_config=default_autoloader_config,
         num_workers=10,
+        save_docs=False,
+        output_location=None,
     ) -> None:
         self.dataset_directory = dataset_directory
         self.output_location = output_location
         self.autoloader_config = autoloader_config
         self.is_zipped = is_zipped
         self.unzip = unzip
-        self.autoloaders = self._get_autoloaders()
+        self.autoloaders = self._get_valid_autoloaders()
         self.num_workers = 10
+        self.save_docs = save_docs
+
+        if self.save_docs and self.output_location is None:
+            raise ValueError(
+                "Must provide an output location when saving documents."
+            )
 
     def load_dataset(self, directory=None) -> List[Document]:
         """
@@ -94,7 +100,7 @@ class Loader:
                 # includes objects that aren't files. However, it's a
                 # reasonable approximation.
                 num_files = len(infolist)
-                partial_func = partial(self.process_zipped_file, directory)
+                partial_func = partial(self.load_zipped_file, directory)
 
                 with tqdm(total=num_files) as pbar:
                     with multiprocessing.Pool(self.num_workers) as pool:
@@ -118,14 +124,14 @@ class Loader:
             with tqdm(total=len(all_files)) as pbar:
                 with multiprocessing.Pool(self.num_workers) as pool:
                     for _ in pool.imap_unordered(
-                        self.process_regular_file, all_files
+                        self.load_regular_file, all_files
                     ):
                         pbar.update(1)
 
-    def process_zipped_file(
+    def load_zipped_file(
         self, directory: str, zipped_file_info: zipfile.ZipInfo
     ) -> None:
-        logging.debug(f"Processing {zipped_file_info}")
+        logging.debug(f"Loading {zipped_file_info}")
         with zipfile.ZipFile(directory, "r") as z:
             if not zipped_file_info.is_dir():
                 with tempfile.TemporaryDirectory() as temp_dir:
@@ -133,18 +139,20 @@ class Loader:
                     extracted_file_path = os.path.join(
                         temp_dir, zipped_file_info.filename
                     )
-                    docs = self.load_file(extracted_file_path)
-                    self.save_file(docs, extracted_file_path)
-        logging.debug(f"{zipped_file_info} processed")
+                    docs = self.file_to_docs(extracted_file_path)
+                    if self.save_docs:
+                        self.save_file(docs, extracted_file_path)
+        logging.debug(f"{zipped_file_info} loaded")
 
-    def process_regular_file(self, file_path: str) -> None:
-        logging.debug(f"Processing {file_path}")
+    def load_regular_file(self, file_path: str) -> None:
+        logging.debug(f"Loading {file_path}")
         if os.path.isfile(file_path):
-            docs = self.load_file(file_path)
-            self.save_file(docs, file_path)
-        logging.debug(f"{file_path} processed")
+            docs = self.file_to_docs(file_path)
+            if self.save_docs:
+                self.save_file(docs, file_path)
+        logging.debug(f"{file_path} loaded")
 
-    def load_file(self, file_path) -> List[Document]:
+    def file_to_docs(self, file_path) -> List[Document]:
         # NOTE(STP): Switching to unstructured's file-type detection in the
         # future might be worthwhile (although their check for whether a file
         # is a JSON file is whether or not json.load() succeeds, which might
@@ -208,7 +216,7 @@ class Loader:
         docs = loader.load()
         return docs
 
-    def _get_autoloaders(self):
+    def _get_valid_autoloaders(self):
         """Returns the set of valid autoloaders.
 
         An autoloader is considered valid if the required arguments for
