@@ -1,0 +1,39 @@
+site_name: Textual Dataset Ingestion Pipeline
+site_description: Documentation for the textual dataset ingestion pipeline
+theme:
+  # name: mkdocs
+  name: readthedocs
+  # name: material
+  # features:
+  #   - content.footnote.tooltips
+
+markdown_extensions:
+  - footnotes
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search
+  - mkdocstrings
+
+markdown_extensions:
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - User Guide:
+    - Installation: user-guide/installation.md
+    - Usage: user-guide/usage.md
+  - API Reference:
+    - Loader: api-reference/load.md
+    - Chunker: api-reference/chunk.md
+    - Embedder: api-reference/embedder.md
+    - Ingester: api-reference/ingest.md
+    - EnhancedDocument: api-reference/enhanced_document.md

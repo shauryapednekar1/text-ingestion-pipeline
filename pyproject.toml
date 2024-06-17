@@ -3,21 +3,64 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "example_package_sp"
-version = "0.0.1"
-authors = [
-  { name="Example Author", email="author@example.com" },
-]
-description = "A small example package"
+name = "easy_ingest_text"
+version = "0.0.4"
+authors = [{ name = "Shaurya Pednekar", email = "shauryapednekar@gmail.com" }]
+description = "A package to enable easily ingesting textual datasets."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
+
+dependencies = [
+  "chromadb==0.5.0",
+  "faiss-gpu==1.7.2",
+  "huggingface-hub==0.23.4",
+  "langchain==0.2.5",
+  "langchain-community==0.2.5",
+  "langchain-core==0.2.7",
+  "langchain-huggingface==0.0.3",
+  "langchain-openai==0.1.8",
+  "langchain-text-splitters==0.2.1",
+  "langdetect==1.0.9",
+  "langsmith==0.1.77",
+  "pydantic==2.7.4",
+  "pydantic_core==2.18.4",
+  "tqdm==4.66.4",
+  "transformers==4.41.2",
+  "unstructured==0.14.6",
+  "unstructured-client==0.23.5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/easy_ingest_text"]
+exclude = [
+    'pkg_venv/*'
+]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    'pkg_venv/*'
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
 
 [project.urls]
 Homepage = "https://github.com/pypa/sampleproject"
 Issues = "https://github.com/pypa/sampleproject/issues"
+
+[tool.black]
+line-length = 79
+exclude = ''' 
+/(
+    .git
+    | __pycache__
+    | venv
+)/
+'''
+
 

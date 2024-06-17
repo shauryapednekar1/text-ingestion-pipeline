@@ -1,0 +1,8 @@
+[flake8]
+; ignore = E501  # Ignores line length limit
+max-line-length = 79
+exclude = 
+    .git,
+    __pycache__,
+    venv/
+docstring-convention=google
