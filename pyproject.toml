@@ -20,4 +20,12 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/pypa/sampleproject"
 Issues = "https://github.com/pypa/sampleproject/issues"
-
+[tool.black]
+line-length = 79
+exclude = '''
+/(
+    .git
+    | __pycache__
+    | venv
+)/
+'''
