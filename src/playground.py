@@ -32,18 +32,19 @@ class CustomLoader(Loader):
 if __name__ == "__main__":
     print("hello")
     logging.debug("Hello - logging")
-    # loader = CustomLoader(
-    #     "data/financial_dataset.zip",
-    #     is_zipped=True,
-    #     output_location="foo",
-    #     num_workers=10,
-    # )
-
     loader = CustomLoader(
-        "data/financial_dataset",
-        is_zipped=False,
-        output_location="foo_regular",
+        "data/financial_dataset.zip",
+        is_zipped=True,
+        # unzip=False,
+        output_location="foo",
         num_workers=10,
     )
+
+    # loader = CustomLoader(
+    #     "data/financial_dataset",
+    #     is_zipped=False,
+    #     output_location="foo_regular",
+    #     num_workers=10,
+    # )
 
     loader.load_dataset()

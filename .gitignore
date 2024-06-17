@@ -3,3 +3,7 @@ data
 __pycache__
 foo**
 .DS_Store
+
+# temp
+unzipped_data
+test_financial_dataset

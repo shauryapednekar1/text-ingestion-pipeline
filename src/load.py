@@ -16,7 +16,8 @@ from langchain_community.document_loaders import (
 from langchain_core.documents import Document
 from smart_open import open
 from tqdm import tqdm
-from tqdm.contrib.concurrent import process_map
+
+from utils import unzip_recursively
 
 default_autoloader_config = {
     "JSONLoader": {
@@ -51,6 +52,7 @@ class Loader:
         dataset_directory,
         is_zipped,
         output_location,
+        unzip=True,
         autoloader_config=default_autoloader_config,
         num_workers=10,
     ) -> None:
@@ -58,6 +60,7 @@ class Loader:
         self.output_location = output_location
         self.autoloader_config = autoloader_config
         self.is_zipped = is_zipped
+        self.unzip = unzip
         self.autoloaders = self._get_autoloaders()
         self.num_workers = 10
 
@@ -71,8 +74,16 @@ class Loader:
             directory = self.dataset_directory
 
         logging.debug("Loading dataset from %s", directory)
-        # TODO(STP): Use multiprocessing here.
-        if self.is_zipped:
+        if self.is_zipped and not self.unzip:
+            warning_message = """
+            Dataset is compressed but will not be unzipped.
+            This is really slow and hasn't been optimized yet, so use with 
+            caution. Alternatively, pass unzip=True when instantiating the
+            Loader instance, which results in significantly faster processing
+            speeds but takes up more disk space.
+            """
+            logging.warning(warning_message)
+
             with zipfile.ZipFile(directory, "r") as z:
                 # NOTE(STP): Converting to a list here in order to provide
                 # a progress bar. However, this is not memory efficient and
@@ -80,18 +91,29 @@ class Loader:
                 # datasets.
                 infolist = list(z.infolist())
                 # NOTE(STP): len(infolist) isn't strictly accurate since it
-                # includes objects that aren't files. However, it's a good
-                # approximation.
+                # includes objects that aren't files. However, it's a
+                # reasonable approximation.
                 num_files = len(infolist)
                 partial_func = partial(self.process_zipped_file, directory)
-
-                # process_map(partial_func, infolist, max_workers=self.num_workers)
 
                 with tqdm(total=num_files) as pbar:
                     with multiprocessing.Pool(self.num_workers) as pool:
                         for _ in pool.imap_unordered(partial_func, infolist):
                             pbar.update(1)
         else:
+            if self.is_zipped:
+                # TODO(STP): Remove magic string.
+                unzipped_directory = "unzipped_data"
+                os.makedirs(unzipped_directory, exist_ok=True)
+                # TODO(STP): Fix filenames here. Right now, the locations for
+                # the unzipped data and standardized data are fairly
+                # inflexible.
+                directory = os.path.join(
+                    unzipped_directory,
+                    os.path.basename(self.dataset_directory),
+                )
+                unzip_recursively(self.dataset_directory, directory)
+
             all_files = list(glob.iglob(f"{directory}/**", recursive=True))
             with tqdm(total=len(all_files)) as pbar:
                 with multiprocessing.Pool(self.num_workers) as pool:
@@ -206,6 +228,7 @@ class Loader:
                 self.autoloaders.add(autoloader)
 
 
+"""
 class CustomLoader:
 
     def load_file(self, file_path):
@@ -220,3 +243,4 @@ class CustomLoader:
                 return Document(page_content=text, metadata=metadata)
         else:
             super().load_file(file_path)
+"""
