@@ -3,10 +3,12 @@ import json
 import multiprocessing
 import os
 from functools import partial
-from typing import Iterable, List
+from typing import Callable, Dict, Iterable, List, Optional, Union
 
+import langchain_text_splitters.character
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_text_splitters.base import TextSplitter
 from tqdm import tqdm
 
 from defaults import DEFAULT_SPLITTERS_CONFIG
@@ -18,10 +20,10 @@ class Chunker:
 
     def __init__(
         self,
-        splitter="recursive",
-        splitter_config=DEFAULT_SPLITTERS_CONFIG,
-        num_workers=10,
-    ):
+        splitter: str = "recursive",
+        splitter_config: Dict = DEFAULT_SPLITTERS_CONFIG,
+        num_workers: int = 10,
+    ) -> None:
         self.splitter_config = splitter_config
         self.num_workers = num_workers
 
@@ -36,10 +38,10 @@ class Chunker:
         self,
         input_dir: str,
         save_chunks: bool = False,
-        output_dir: str = None,
+        output_dir: Optional[str] = None,
         detailed_progress: bool = False,
-        num_workers: int = None,
-    ):
+        num_workers: Optional[int] = None,
+    ) -> None:
         if num_workers is None:
             num_workers = self.num_workers
 
@@ -76,7 +78,9 @@ class Chunker:
     def chunk_docs(self, raw_docs: List[Document]):
         return self.splitter.split_documents(raw_docs)
 
-    def _get_splitter(self, splitter):
+    def _get_splitter(self, splitter: str) -> TextSplitter:
         if splitter == "recursive":
             kwargs = self.splitter_config["recursive"]
             return RecursiveCharacterTextSplitter(**kwargs)
+        else:
+            raise ValueError("Splitter not recognized: %s", splitter)

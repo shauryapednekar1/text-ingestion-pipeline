@@ -36,11 +36,11 @@ DEFAULT_EMBEDDERS_CONFIG = {
     "OpenAI": {"model": "text-embedding-3-large"},
     "HuggingFace": {
         "model_name": "sentence-transformers/all-mpnet-base-v2",
-        "model_kwargs": {"device": "cpu"},
+        "model_kwargs": {"device": "cuda"},
         "encode_kwargs": {"normalize_embeddings": False},
     },
 }
 DEFAULT_VECTORSTORES_CONFIG = {
     "Chroma": {"collection_name": "langchain"},
-    # "FAISS": {},
+    "FAISS": {},
 }

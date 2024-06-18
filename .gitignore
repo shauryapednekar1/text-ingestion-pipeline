@@ -11,3 +11,6 @@ datasets
 raw_documents
 unzipped
 chunked_documents
+**.sqlite3
+**.zip
+**.vscode

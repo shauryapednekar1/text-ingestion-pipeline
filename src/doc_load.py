@@ -4,7 +4,7 @@ import os
 import tempfile
 import zipfile
 from functools import partial
-from typing import List
+from typing import List, Optional, Set
 
 from langchain_community.document_loaders import (
     CSVLoader,
@@ -22,24 +22,25 @@ class Loader:
 
     def __init__(
         self,
-        autoloader_config=DEFAULT_AUTOLOADER_CONFIG,
-        num_workers=10,
+        autoloader_config: dict = DEFAULT_AUTOLOADER_CONFIG,
+        num_workers: int = 10,
     ) -> None:
-        self.autoloader_config = autoloader_config
-        self.autoloaders = self._get_valid_autoloaders()
+        self.autoloader_config: dict = autoloader_config
+        self.autoloaders: Set[str] = self._get_valid_autoloaders()
         self.num_workers = 10
 
     def load_dataset(
         self,
-        dataset_dir: str,
-        is_zipped=False,
+        input_dir: str,
+        is_zipped: bool = False,
         unzip=True,
         unzip_dir="unzipped",
         save_docs=False,
         output_dir=None,
         detailed_progress=False,
         num_workers=None,
-    ) -> List[Document]:
+        max_files=None,
+    ) -> None:
         """
 
         Takes in the location to a dataset and stores them as standardized
@@ -53,7 +54,7 @@ class Loader:
                 "Must provide an output directory when saving documents."
             )
 
-        logging.debug("Loading dataset from %s", dataset_dir)
+        logging.debug("Loading dataset from %s", input_dir)
         if is_zipped and not unzip:
             warning_message = """
             Dataset is compressed but will not be unzipped.
@@ -64,7 +65,7 @@ class Loader:
             """
             logging.warning(warning_message)
 
-            with zipfile.ZipFile(dataset_dir, "r") as z:
+            with zipfile.ZipFile(input_dir, "r") as z:
                 # NOTE(STP): Converting to a list here in order to provide
                 # a progress bar. However, this is not memory efficient and
                 # might not be worth the tradeoff, especially for massive
@@ -78,7 +79,7 @@ class Loader:
                     num_files = len(infolist)
                 partial_func = partial(
                     self.load_zipped_file,
-                    dataset_dir,
+                    input_dir,
                     save_docs,
                     output_dir,
                 )
@@ -92,14 +93,14 @@ class Loader:
                 os.makedirs(unzip_dir, exist_ok=True)
                 directory = os.path.join(
                     unzip_dir,
-                    os.path.dirname(dataset_dir),
+                    os.path.dirname(input_dir),
                     # TODO(STP): Use a helper to remove file extension here.
-                    os.path.basename(dataset_dir)[:-4],
+                    os.path.basename(input_dir)[:-4],
                 )
                 print(f"directory: {directory}")
-                unzip_recursively(dataset_dir, directory)
+                unzip_recursively(input_dir, directory)
             else:
-                directory = dataset_dir
+                directory = input_dir
 
             num_files = None
             if detailed_progress:
@@ -113,11 +114,15 @@ class Loader:
                 total=num_files, desc="Loading files", unit=" files"
             ) as pbar:
                 with multiprocessing.Pool(num_workers) as pool:
-                    for _ in pool.imap_unordered(
-                        partial_func,
-                        get_files_from_dir(directory),
+                    for i, _ in enumerate(
+                        pool.imap_unordered(
+                            partial_func,
+                            get_files_from_dir(directory),
+                        )
                     ):
                         pbar.update(1)
+                        if max_files is not None and i + 1 >= max_files:
+                            break
 
     def load_zipped_file(
         self,
@@ -142,7 +147,7 @@ class Loader:
         logging.debug(f"{zipped_file_info} loaded")
 
     def load_regular_file(
-        self, save_docs: bool, output_dir: str, file_path: str
+        self, save_docs: bool, output_dir: Optional[str], file_path: str
     ) -> None:
         logging.debug(f"Loading {file_path}")
         docs = self.file_to_docs(file_path)
@@ -204,7 +209,7 @@ class Loader:
         docs = loader.load()
         return docs
 
-    def _get_valid_autoloaders(self):
+    def _get_valid_autoloaders(self) -> Set[str]:
         """Returns the set of valid autoloaders.
 
         An autoloader is considered valid if the required arguments for
@@ -212,7 +217,7 @@ class Loader:
 
         This function will only be called once per dataset.
         """
-        self.autoloaders = set()
+        autoloaders = set()
         for autoloader, config in self.autoloader_config.items():
             usable = True
             required_config = config["required"]
@@ -221,7 +226,9 @@ class Loader:
                     usable = False
                     break
             if usable:
-                self.autoloaders.add(autoloader)
+                autoloaders.add(autoloader)
+
+        return autoloaders
 
 
 """

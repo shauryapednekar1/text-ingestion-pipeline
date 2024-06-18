@@ -48,7 +48,8 @@ def save_docs_to_file(
 ):
     """Saves Documents to file on disk."""
     os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.basename(original_file_path)
+    # output_path = os.path.basename(original_file_path)
+    output_path = original_file_path
     if output_path.split(".")[-1] != "jsonl":
         output_path += ".jsonl"
     output_path = os.path.join(output_dir, output_path)
