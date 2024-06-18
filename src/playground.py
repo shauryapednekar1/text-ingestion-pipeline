@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     chunker = Chunker()
     chunker.chunk_dataset(
-        input_dir="../raw_documents/unzipped/financial_dataset",
+        input_dir="raw_documents/unzipped/financial_dataset",
         save_chunks=True,
         output_dir="chunked_documents",
         detailed_progress=False,
@@ -77,6 +77,6 @@ if __name__ == "__main__":
 
     embedder = Embedder(vectorstore="Chroma")
     embedder.embed_dataset(
-        "../chunked_documents/raw_documents/unzipped/financial_dataset",
+        "chunked_documents/raw_documents/unzipped/financial_dataset",
         detailed_progress=True,
     )

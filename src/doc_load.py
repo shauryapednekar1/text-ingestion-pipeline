@@ -33,7 +33,6 @@ class Loader:
         self,
         input_dir: str,
         is_zipped: bool = False,
-        unzip=True,
         unzip_dir="unzipped",
         save_docs=False,
         output_dir=None,
@@ -55,103 +54,47 @@ class Loader:
             )
 
         logging.debug("Loading dataset from %s", input_dir)
-        if is_zipped and not unzip:
-            warning_message = """
-            Dataset is compressed but will not be unzipped.
-            This is really slow and hasn't been optimized yet, so use with
-            caution. Alternatively, pass unzip=True when instantiating the
-            Loader instance, which results in significantly faster processing
-            speeds but takes up more disk space.
-            """
-            logging.warning(warning_message)
 
-            with zipfile.ZipFile(input_dir, "r") as z:
-                # NOTE(STP): Converting to a list here in order to provide
-                # a progress bar. However, this is not memory efficient and
-                # might not be worth the tradeoff, especially for massive
-                # datasets.
-                infolist = list(z.infolist())
-                # NOTE(STP): len(infolist) isn't strictly accurate since it
-                # includes objects that aren't files. However, it's a
-                # reasonable approximation.
-                num_files = None
-                if detailed_progress:
-                    num_files = len(infolist)
-                partial_func = partial(
-                    self.load_zipped_file,
-                    input_dir,
-                    save_docs,
-                    output_dir,
-                )
-
-                with tqdm(total=num_files) as pbar:
-                    with multiprocessing.Pool(self.num_workers) as pool:
-                        for _ in pool.imap_unordered(partial_func, infolist):
-                            pbar.update(1)
-        else:
-            if is_zipped:
-                os.makedirs(unzip_dir, exist_ok=True)
-                directory = os.path.join(
-                    unzip_dir,
-                    os.path.dirname(input_dir),
-                    # TODO(STP): Use a helper to remove file extension here.
-                    os.path.basename(input_dir)[:-4],
-                )
-                print(f"directory: {directory}")
-                unzip_recursively(input_dir, directory)
-            else:
-                directory = input_dir
-
-            num_files = None
-            if detailed_progress:
-                num_files = len(list(get_files_from_dir(directory)))
-
-            partial_func = partial(
-                self.load_regular_file, save_docs, output_dir
+        if is_zipped:
+            os.makedirs(unzip_dir, exist_ok=True)
+            directory = os.path.join(
+                unzip_dir,
+                os.path.dirname(input_dir),
+                # TODO(STP): Use a helper to remove file extension here.
+                os.path.basename(input_dir)[:-4],
             )
+            print(f"directory: {directory}")
+            unzip_recursively(input_dir, directory)
+        else:
+            directory = input_dir
 
-            with tqdm(
-                total=num_files, desc="Loading files", unit=" files"
-            ) as pbar:
-                with multiprocessing.Pool(num_workers) as pool:
-                    for i, _ in enumerate(
-                        pool.imap_unordered(
-                            partial_func,
-                            get_files_from_dir(directory),
-                        )
-                    ):
-                        pbar.update(1)
-                        if max_files is not None and i + 1 >= max_files:
-                            break
+        num_files = None
+        if detailed_progress:
+            num_files = len(list(get_files_from_dir(directory)))
 
-    def load_zipped_file(
-        self,
-        directory: str,
-        save_docs: bool,
-        output_dir: str,
-        zipped_file_info: zipfile.ZipInfo,
-    ) -> None:
-        logging.debug(f"Loading {zipped_file_info}")
-        with zipfile.ZipFile(directory, "r") as z:
-            if not zipped_file_info.is_dir():
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    z.extract(zipped_file_info, path=temp_dir)
-                    extracted_file_path = os.path.join(
-                        temp_dir, zipped_file_info.filename
+        partial_func = partial(self.load_file, save_docs, output_dir)
+
+        with tqdm(
+            total=num_files, desc="Loading files", unit=" files"
+        ) as pbar:
+            with multiprocessing.Pool(num_workers) as pool:
+                for i, _ in enumerate(
+                    pool.imap_unordered(
+                        partial_func,
+                        get_files_from_dir(directory),
                     )
-                    docs = self.file_to_docs(extracted_file_path)
-                    if save_docs:
-                        save_docs_to_file(
-                            docs, extracted_file_path, output_dir
-                        )
-        logging.debug(f"{zipped_file_info} loaded")
+                ):
+                    pbar.update(1)
+                    if max_files is not None and i + 1 >= max_files:
+                        break
 
-    def load_regular_file(
+    def load_file(
         self, save_docs: bool, output_dir: Optional[str], file_path: str
     ) -> None:
         logging.debug(f"Loading {file_path}")
         docs = self.file_to_docs(file_path)
         if save_docs:
+            assert output_dir is not None
             save_docs_to_file(docs, file_path, output_dir)
         logging.debug(f"{file_path} loaded")
 
