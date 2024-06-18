@@ -1,12 +1,17 @@
+import getpass
 import json
 import logging
-from chunk import Chunker
+import os
 from typing import Iterable, List
 
 import pudb
 from langchain_core.documents import Document
 
-from load import Loader
+from doc_chunk import Chunker
+from doc_embed import Embedder
+from doc_load import Loader
+
+# os.environ['OPENAI_API_KEY'] = getpass.getpass('OpenAI API Key:')
 
 logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
 
@@ -49,29 +54,22 @@ def load_docs_from_jsonl(file_path) -> Iterable[Document]:
 if __name__ == "__main__":
     print("hello")
     logging.debug("Hello - logging")
-    # loader = CustomLoader(
-    #     "data/financial_dataset.zip",
-    #     is_zipped=True,
-    #     # unzip=False,
-    #     output_location="foo",
-    #     num_workers=10,
+
+    # loader = CustomLoader()
+    # loader.load_dataset(
+    #     dataset_dir="unzipped/datasets/financial_dataset",
+    #     save_docs=True,
+    #     output_dir="raw_documents",
+    #     detailed_progress=False,
     # )
 
-    current_files = [
-        "/Users/shauryapednekar/foo/src/text-ingestion-pipeline/foo/unzipped_data/financial_dataset.zip/2018_02_112b52537b67659ad3609a234388c50a/blogs_0000101.json.jsonl",
-        "/Users/shauryapednekar/foo/src/text-ingestion-pipeline/foo/unzipped_data/financial_dataset.zip/2018_02_112b52537b67659ad3609a234388c50a/blogs_0000301.json.jsonl",
-    ]
-
-    chunker = Chunker()
-
-    for file_path in current_files:
-        docs = load_docs_from_jsonl(file_path=file_path)
-        print(chunker.chunk_docs(docs))
-    # loader = CustomLoader(
-    #     "data/financial_dataset",
-    #     is_zipped=False,
-    #     output_location="foo_regular",
-    #     num_workers=10,
+    # chunker = Chunker()
+    # chunker.chunk_dataset(
+    #     input_dir="raw_documents/unzipped/datasets/financial_dataset",
+    #     save_chunks=True,
+    #     output_dir="chunked_documents",
+    #     detailed_progress=False,
     # )
 
-    # loader.load_dataset()
+    embedder = Embedder()
+    embedder.embed_dataset("chunked_documents/financial_dataset")

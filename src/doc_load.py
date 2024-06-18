@@ -1,4 +1,3 @@
-import glob
 import logging
 import multiprocessing
 import os
@@ -13,84 +12,59 @@ from langchain_community.document_loaders import (
     UnstructuredFileLoader,
 )
 from langchain_core.documents import Document
-from smart_open import open
 from tqdm import tqdm
 
-from utils import unzip_recursively
-
-default_autoloader_config = {
-    "JSONLoader": {
-        "required": {
-            "jq_schema": None,  # "",
-        },
-        "optional": {
-            "content_key": None,
-            "is_content_key_jq_parsable": False,
-            "metadata_func": None,
-            "text_content": True,
-            "json_lines": False,
-        },
-    },
-    "CSVLoader": {
-        "required": {},
-        "optional": {
-            "source_column": None,
-            "metadata_columns": (),
-            "csv_args": None,
-            "encoding": None,
-            "autodetect_encoding": False,
-        },
-    },
-}
+from defaults import DEFAULT_AUTOLOADER_CONFIG
+from utils import get_files_from_dir, save_docs_to_file, unzip_recursively
 
 
 class Loader:
 
     def __init__(
         self,
-        dataset_directory,
-        is_zipped,
-        unzip=True,
-        autoloader_config=default_autoloader_config,
+        autoloader_config=DEFAULT_AUTOLOADER_CONFIG,
         num_workers=10,
-        save_docs=False,
-        output_location=None,
     ) -> None:
-        self.dataset_directory = dataset_directory
-        self.output_location = output_location
         self.autoloader_config = autoloader_config
-        self.is_zipped = is_zipped
-        self.unzip = unzip
         self.autoloaders = self._get_valid_autoloaders()
         self.num_workers = 10
-        self.save_docs = save_docs
 
-        if self.save_docs and self.output_location is None:
-            raise ValueError(
-                "Must provide an output location when saving documents."
-            )
-
-    def load_dataset(self, directory=None) -> List[Document]:
+    def load_dataset(
+        self,
+        dataset_dir: str,
+        is_zipped=False,
+        unzip=True,
+        unzip_dir="unzipped",
+        save_docs=False,
+        output_dir=None,
+        detailed_progress=False,
+        num_workers=None,
+    ) -> List[Document]:
         """
 
         Takes in the location to a dataset and stores them as standardized
         Document objects.
         """
-        if directory is None:
-            directory = self.dataset_directory
+        if num_workers is None:
+            num_workers = self.num_workers
 
-        logging.debug("Loading dataset from %s", directory)
-        if self.is_zipped and not self.unzip:
+        if save_docs and output_dir is None:
+            raise ValueError(
+                "Must provide an output directory when saving documents."
+            )
+
+        logging.debug("Loading dataset from %s", dataset_dir)
+        if is_zipped and not unzip:
             warning_message = """
             Dataset is compressed but will not be unzipped.
-            This is really slow and hasn't been optimized yet, so use with 
+            This is really slow and hasn't been optimized yet, so use with
             caution. Alternatively, pass unzip=True when instantiating the
             Loader instance, which results in significantly faster processing
             speeds but takes up more disk space.
             """
             logging.warning(warning_message)
 
-            with zipfile.ZipFile(directory, "r") as z:
+            with zipfile.ZipFile(dataset_dir, "r") as z:
                 # NOTE(STP): Converting to a list here in order to provide
                 # a progress bar. However, this is not memory efficient and
                 # might not be worth the tradeoff, especially for massive
@@ -99,37 +73,58 @@ class Loader:
                 # NOTE(STP): len(infolist) isn't strictly accurate since it
                 # includes objects that aren't files. However, it's a
                 # reasonable approximation.
-                num_files = len(infolist)
-                partial_func = partial(self.load_zipped_file, directory)
+                num_files = None
+                if detailed_progress:
+                    num_files = len(infolist)
+                partial_func = partial(
+                    self.load_zipped_file,
+                    dataset_dir,
+                    save_docs,
+                    output_dir,
+                )
 
                 with tqdm(total=num_files) as pbar:
                     with multiprocessing.Pool(self.num_workers) as pool:
                         for _ in pool.imap_unordered(partial_func, infolist):
                             pbar.update(1)
         else:
-            if self.is_zipped:
-                # TODO(STP): Remove magic string.
-                unzipped_directory = "unzipped_data"
-                os.makedirs(unzipped_directory, exist_ok=True)
-                # TODO(STP): Fix filenames here. Right now, the locations for
-                # the unzipped data and standardized data are fairly
-                # inflexible.
+            if is_zipped:
+                os.makedirs(unzip_dir, exist_ok=True)
                 directory = os.path.join(
-                    unzipped_directory,
-                    os.path.basename(self.dataset_directory),
+                    unzip_dir,
+                    os.path.dirname(dataset_dir),
+                    # TODO(STP): Use a helper to remove file extension here.
+                    os.path.basename(dataset_dir)[:-4],
                 )
-                unzip_recursively(self.dataset_directory, directory)
+                print(f"directory: {directory}")
+                unzip_recursively(dataset_dir, directory)
+            else:
+                directory = dataset_dir
 
-            all_files = list(glob.iglob(f"{directory}/**", recursive=True))
-            with tqdm(total=len(all_files)) as pbar:
-                with multiprocessing.Pool(self.num_workers) as pool:
+            num_files = None
+            if detailed_progress:
+                num_files = len(list(get_files_from_dir(directory)))
+
+            partial_func = partial(
+                self.load_regular_file, save_docs, output_dir
+            )
+
+            with tqdm(
+                total=num_files, desc="Loading files", unit=" files"
+            ) as pbar:
+                with multiprocessing.Pool(num_workers) as pool:
                     for _ in pool.imap_unordered(
-                        self.load_regular_file, all_files
+                        partial_func,
+                        get_files_from_dir(directory),
                     ):
                         pbar.update(1)
 
     def load_zipped_file(
-        self, directory: str, zipped_file_info: zipfile.ZipInfo
+        self,
+        directory: str,
+        save_docs: bool,
+        output_dir: str,
+        zipped_file_info: zipfile.ZipInfo,
     ) -> None:
         logging.debug(f"Loading {zipped_file_info}")
         with zipfile.ZipFile(directory, "r") as z:
@@ -140,16 +135,19 @@ class Loader:
                         temp_dir, zipped_file_info.filename
                     )
                     docs = self.file_to_docs(extracted_file_path)
-                    if self.save_docs:
-                        self.save_file(docs, extracted_file_path)
+                    if save_docs:
+                        save_docs_to_file(
+                            docs, extracted_file_path, output_dir
+                        )
         logging.debug(f"{zipped_file_info} loaded")
 
-    def load_regular_file(self, file_path: str) -> None:
+    def load_regular_file(
+        self, save_docs: bool, output_dir: str, file_path: str
+    ) -> None:
         logging.debug(f"Loading {file_path}")
-        if os.path.isfile(file_path):
-            docs = self.file_to_docs(file_path)
-            if self.save_docs:
-                self.save_file(docs, file_path)
+        docs = self.file_to_docs(file_path)
+        if save_docs:
+            save_docs_to_file(docs, file_path, output_dir)
         logging.debug(f"{file_path} loaded")
 
     def file_to_docs(self, file_path) -> List[Document]:
@@ -195,16 +193,6 @@ class Loader:
         else:
             # Fallback to unstructured loader.
             return self.fallback_loader(file_path)
-
-    def save_file(self, docs: List[Document], original_file_path: str):
-        """Saves a document to disk."""
-        os.makedirs(self.output_location, exist_ok=True)
-        output_path = original_file_path + ".jsonl"
-        output_path = os.path.join(self.output_location, output_path)
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        with open(output_path, "w") as f:
-            for doc in docs:
-                f.write(doc.json() + "\n")
 
     def fallback_loader(self, file_path) -> List[Document]:
         logging.info("Using fallback loader for %s.", file_path)

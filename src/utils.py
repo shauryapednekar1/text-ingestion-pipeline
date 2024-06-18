@@ -1,5 +1,11 @@
+import glob
+import json
 import os
 import zipfile
+from typing import List
+
+from langchain_core.documents import Document
+from smart_open import open
 
 
 def unzip_recursively(source_zip, target_dir, max_depth=100):
@@ -35,5 +41,35 @@ def unzip_recursively(source_zip, target_dir, max_depth=100):
                 print(f"Deleted {file_path}")
 
 
-# Usage example
-# unzip_recursively('data/financial_dataset.zip', 'data/financial_dataset')
+def save_docs_to_file(
+    docs: List[Document],
+    original_file_path: str,
+    output_dir: str,
+):
+    """Saves Documents to file on disk."""
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.basename(original_file_path)
+    if output_path.split(".")[-1] != "jsonl":
+        output_path += ".jsonl"
+    output_path = os.path.join(output_dir, output_path)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w") as f:
+        for doc in docs:
+            f.write(doc.json() + "\n")
+
+
+def get_files_from_dir(root_dir: str):
+    """Generator function to iterate over file paths recursively."""
+    for path in glob.iglob(os.path.join(root_dir, "**"), recursive=True):
+        if os.path.isfile(path):
+            yield path
+
+
+def load_docs_from_jsonl(file_path) -> List[Document]:
+    res = []
+    with open(file_path, "r") as jsonl_file:
+        for line in jsonl_file:
+            data = json.loads(line)
+            obj = Document(**data)
+            res.append(obj)
+    return res
