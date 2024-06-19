@@ -1,4 +1,5 @@
 import multiprocessing
+from itertools import islice
 from multiprocessing import Queue
 from typing import List, Optional
 
@@ -63,6 +64,7 @@ class Embedder:
         input_dir: str,
         detailed_progress: bool = False,
         num_workers: Optional[int] = None,
+        batch_size: int = 1000,
     ) -> None:
         num_files = None
         if detailed_progress:
@@ -71,10 +73,20 @@ class Embedder:
         with tqdm(
             total=num_files, desc="Embedding files", unit=" files"
         ) as pbar:
-            input_files_iterator = get_files_from_dir(input_dir)
-            for f in input_files_iterator:
-                self.embed_file(f)
-                pbar.update(1)
+            while True:
+                file_chunk = list(
+                    islice(get_files_from_dir(input_dir), batch_size)
+                )
+                if not file_chunk:
+                    break
+
+                self.embed_files(file_chunk)
+                pbar.update(len(file_chunk))
+
+            # input_files_iterator = get_files_from_dir(input_dir)
+            # for f in input_files_iterator:
+            #     self.embed_file(f)
+            #     pbar.update(1)
             # with multiprocessing.Pool(num_workers) as pool:
             #     for _ in pool.imap_unordered(
             #         self.embed_file,
@@ -82,9 +94,13 @@ class Embedder:
             #     ):
             #         pbar.update(1)
 
-    def embed_file(self, file_path: str) -> None:
-        docs = load_docs_from_jsonl(file_path)
+    def embed_files(self, file_paths: List[str]) -> None:
+        docs = []
+        for file_path in file_paths:
+            docs.extend(load_docs_from_jsonl(file_path))
+        print("embedding docs")
         self.embed_docs(docs)
+        print("done embedding docs")
 
     def embed_docs(self, docs: List[Document]) -> None:
         # HACK(STP): The Chroma vectorstore doesn't support some data types

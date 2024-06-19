@@ -62,28 +62,32 @@ if __name__ == "__main__":
 
     # loader = CustomLoader()
     # loader.load_dataset(
-    #     input_dir="../unzipped/financial_dataset",
-    #     # is_zipped=True,
+    #     # input_dir="../unzipped/financial_dataset",
+    #     input_dir="../financial_dataset.zip",
+    #     is_zipped=True,
     #     save_docs=True,
     #     output_dir="raw_documents",
-    #     detailed_progress=False,
-    #     num_workers=5,
-    #     max_files=1000,
+    #     detailed_progress=True,
+    #     num_workers=10,
+    #     # max_files=1000,
     # )
 
     # chunker = Chunker()
     # chunker.chunk_dataset(
-    #     input_dir="raw_documents/unzipped/financial_dataset",
+    #     input_dir="raw_documents/financial_dataset",
     #     save_chunks=True,
     #     output_dir="chunked_documents",
     #     detailed_progress=False,
-    #     num_workers=5,
+    #     num_workers=15,
     # )
 
-    # embedder = Embedder(vectorstore="Chroma")
+    # embedder = Embedder(
+    # vectorstore="Chroma"
+    # )
     # embedder.embed_dataset(
-    #     "chunked_documents/raw_documents/unzipped/financial_dataset",
+    #     "chunked_documents/raw_documents/financial_dataset",
     #     detailed_progress=True,
+    #     batch_size=1000
     # )
 
     # assert issubclass(CustomLoader, Loader)

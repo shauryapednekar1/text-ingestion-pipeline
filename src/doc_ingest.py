@@ -1,6 +1,8 @@
-import multiprocessing
 import os
+import pickle
 from functools import partial
+from itertools import islice
+from multiprocessing import Pool
 from typing import List, Optional
 
 from langchain_core.documents import Document
@@ -47,14 +49,32 @@ class Ingester:
         if detailed_progress:
             num_files = max_files or len(list(get_files_from_dir(directory)))
 
-        # partial_func = partial(self.ingest_file, level, save_docs, output_dir)
+        partial_func = partial(self.ingest_file, save_docs, output_dir)
         with tqdm(
             total=num_files, desc="Ingesting files", unit=" files"
         ) as pbar:
             batch = []
             prev_counter = 0
+
+            # with Pool(10) as pool:
+            #     while True:
+            #         file_chunk = list(
+            #             islice(get_files_from_dir(directory), batch_size)
+            #         )
+            #         if not file_chunk:
+            #             break
+
+            #         processed_docs = pool.map(partial_func, file_chunk)
+            #         self.embedder.embed_docs(processed_docs)
+            #         pbar.update(len(file_chunk))
+
             for i, file_path in enumerate(get_files_from_dir(directory)):
-                docs = self.ingest_file(file_path, save_docs, output_dir)
+
+                docs = self.ingest_file(
+                    save_docs=save_docs,
+                    output_dir=output_dir,
+                    file_path=file_path,
+                )
                 batch.extend(docs)
 
                 if len(batch) > batch_size:
@@ -68,6 +88,13 @@ class Ingester:
 
                 if max_files is not None and i >= max_files:
                     break
+
+        with open("vectorstore.pkl", "wb") as f:
+            pickle.dump(self.embedder.vectorstore_client, f)
+
+        self.embedder.vectorstore_client.save_local("faiss_index")
+
+
             # with multiprocessing.get_context("spawn").Pool(
             #     num_workers,
             # ) as pool:
@@ -83,9 +110,9 @@ class Ingester:
 
     def ingest_file(
         self,
-        file_path: str,
         save_docs: bool,
         output_dir: Optional[str],
+        file_path: str,
     ) -> List[Document]:
         raw_docs = self.loader.file_to_docs(self.loader, file_path)
         chunked_docs = self.chunker.chunk_docs(raw_docs)

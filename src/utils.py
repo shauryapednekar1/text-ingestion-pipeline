@@ -58,6 +58,7 @@ def save_docs_to_file(
         for doc in docs:
             f.write(doc.json() + "\n")
 
+# def get_batched_files_from_dir(root_dir:str):
 
 def get_files_from_dir(root_dir: str):
     """Generator function to iterate over file paths recursively."""
