@@ -1,7 +1,8 @@
+import multiprocessing as mp
 import os
 import pickle
 from functools import partial
-from itertools import islice
+from itertools import chain, islice
 from multiprocessing import Pool
 from typing import List, Optional
 
@@ -12,6 +13,9 @@ from doc_chunk import Chunker
 from doc_embed import Embedder
 from doc_load import Loader
 from utils import get_files_from_dir, save_docs_to_file, unzip_recursively
+
+# def quick_ingest():
+#     queue = mp.Queue()
 
 
 class Ingester:
@@ -38,7 +42,7 @@ class Ingester:
         num_workers: int = 10,
         max_files: Optional[int] = None,
         detailed_progress: bool = False,
-        batch_size: int = 50000,
+        batch_size: int = 100,
     ):
         if is_zipped:
             self.loader.unzip_dataset(input_dir, unzip_dir)
@@ -47,47 +51,67 @@ class Ingester:
 
         num_files = None
         if detailed_progress:
-            num_files = max_files or len(list(get_files_from_dir(directory)))
+            num_files = (
+                max_files or 612484 or len(list(get_files_from_dir(directory)))
+            )
 
-        partial_func = partial(self.ingest_file, save_docs, output_dir)
+        partial_func = partial(
+            Ingester.ingest_file,
+            save_docs,
+            output_dir,
+        )
         with tqdm(
             total=num_files, desc="Ingesting files", unit=" files"
         ) as pbar:
-            batch = []
-            prev_counter = 0
 
-            # with Pool(10) as pool:
-            #     while True:
-            #         file_chunk = list(
-            #             islice(get_files_from_dir(directory), batch_size)
-            #         )
-            #         if not file_chunk:
-            #             break
+            if False:
+                with Pool(10) as pool:
+                    while True:
+                        file_chunk = list(
+                            islice(get_files_from_dir(directory), batch_size)
+                        )
+                        if not file_chunk:
+                            break
 
-            #         processed_docs = pool.map(partial_func, file_chunk)
-            #         self.embedder.embed_docs(processed_docs)
-            #         pbar.update(len(file_chunk))
+                        print("loading docs")
+                        processed_docs = pool.map(partial_func, file_chunk)
+                        print("loaded docs")
+                        processed_docs = list(
+                            chain.from_iterable(processed_docs)
+                        )
+                        print("embedding docs")
+                        self.embedder.embed_docs(processed_docs)
+                        print("embedded docs")
+                        pbar.update(len(file_chunk))
 
-            for i, file_path in enumerate(get_files_from_dir(directory)):
+            if True:
+                batch = []
+                prev_counter = 0
+                for i, file_path in enumerate(get_files_from_dir(directory)):
 
-                docs = self.ingest_file(
-                    save_docs=save_docs,
-                    output_dir=output_dir,
-                    file_path=file_path,
-                )
-                batch.extend(docs)
+                    docs = self.ingest_file(
+                        save_docs=save_docs,
+                        output_dir=output_dir,
+                        file_path=file_path,
+                    )
+                    batch.extend(docs)
 
-                if len(batch) > batch_size:
+                    if i - prev_counter > batch_size:
+                        print("embedding docs")
+                        self.embedder.embed_docs(batch)
+                        print("embedded docs")
+                        batch = []
+
+                        pbar.update(i - prev_counter)
+                        prev_counter = i
+
+                    if max_files is not None and i >= max_files:
+                        break
+
+                if batch:
                     print("embedding docs")
-                    self.embedder.embed_docs(docs)
+                    self.embedder.embed_docs(batch)
                     print("embedded docs")
-                    batch = []
-
-                    pbar.update(i - prev_counter)
-                    prev_counter = i
-
-                if max_files is not None and i >= max_files:
-                    break
 
         with open("vectorstore.pkl", "wb") as f:
             pickle.dump(self.embedder.vectorstore_client, f)
@@ -95,26 +119,13 @@ class Ingester:
         self.embedder.vectorstore_client.save_local("faiss_index")
 
 
-            # with multiprocessing.get_context("spawn").Pool(
-            #     num_workers,
-            # ) as pool:
-            # for i, _ in enumerate(
-            #     pool.imap_unordered(
-            #         partial_func,
-            #         get_files_from_dir(directory),
-            #     )
-            # ):
-            #     pbar.update(1)
-            #     if max_files is not None and i + 1 >= max_files:
-            #         break
-
     def ingest_file(
         self,
         save_docs: bool,
         output_dir: Optional[str],
         file_path: str,
     ) -> List[Document]:
-        raw_docs = self.loader.file_to_docs(self.loader, file_path)
+        raw_docs = self.loader.file_to_docs(file_path)
         chunked_docs = self.chunker.chunk_docs(raw_docs)
         # self.embedder.embed_docs(chunked_docs)
         if save_docs:

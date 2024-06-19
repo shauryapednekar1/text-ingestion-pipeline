@@ -8,6 +8,7 @@ from doc_chunk import Chunker
 from doc_embed import Embedder
 from doc_ingest import Ingester
 from doc_load import Loader
+from tmp import quick_ingest
 
 # os.environ['OPENAI_API_KEY'] = getpass.getpass('OpenAI API Key:')
 
@@ -82,7 +83,7 @@ if __name__ == "__main__":
     # )
 
     # embedder = Embedder(
-    # vectorstore="Chroma"
+    # vectorstore="FAISS"
     # )
     # embedder.embed_dataset(
     #     "chunked_documents/raw_documents/financial_dataset",
@@ -91,13 +92,19 @@ if __name__ == "__main__":
     # )
 
     # assert issubclass(CustomLoader, Loader)
-    ingester = Ingester(loader=CustomLoader)
-    ingester.ingest_dataset(
-        input_dir="../unzipped/financial_dataset",
-        save_docs=True,
-        output_dir="test_output",
-        detailed_progress=True,
-        # max_files=10000,
-    )
+    # ingester = Ingester(loader=CustomLoader())
+    # ingester.ingest_dataset(
+    #     input_dir="../unzipped/financial_dataset",
+    #     # save_docs=True,
+    #     output_dir="test_output",
+    #     detailed_progress=True,
+    #     # max_files=10000,
+    # )
 
     # ingester = Ingester()
+
+    quick_ingest(
+        input_dir="../unzipped/financial_dataset",
+        loader=CustomLoader(),
+        batch_size=1000,
+    )

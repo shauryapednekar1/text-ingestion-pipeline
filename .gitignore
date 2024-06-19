@@ -6,7 +6,7 @@ foo**
 
 # temp
 unzipped_data
-test_financial_dataset
+**financial_dataset
 datasets
 raw_documents
 unzipped
@@ -17,3 +17,5 @@ chunked_documents
 test_output
 **.mypy_cache
 **.pkl
+**.faiss
+**.prof
