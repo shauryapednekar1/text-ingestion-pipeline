@@ -21,7 +21,7 @@ Issues = "https://github.com/pypa/sampleproject/issues"
 
 [tool.black]
 line-length = 79
-exclude = '''
+exclude = ''' 
 /(
     .git
     | __pycache__
