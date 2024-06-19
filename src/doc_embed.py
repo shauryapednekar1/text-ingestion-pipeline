@@ -1,3 +1,4 @@
+import logging
 import multiprocessing
 from itertools import islice
 from multiprocessing import Queue
@@ -95,14 +96,20 @@ class Embedder:
             #         pbar.update(1)
 
     def embed_files(self, file_paths: List[str]) -> None:
+        # TODO(STP): Explain why this takes in multiple files.
+        logging.debug("Embedding files: %s", file_paths)
         docs = []
         for file_path in file_paths:
             docs.extend(load_docs_from_jsonl(file_path))
-        print("embedding docs")
         self.embed_docs(docs)
-        print("done embedding docs")
+        logging.debug("Embedded files: %s", file_paths)
 
     def embed_docs(self, docs: List[Document]) -> None:
+        # TODO(STP): We might want to batch embed documents here if the number
+        # of documents exceed a certain threshold. Would need to look more into
+        # if and when that would be useful.
+        logging.debug("Embedding %d docs", len(docs))
+
         # HACK(STP): The Chroma vectorstore doesn't support some data types
         # for the document's metadata values. To work around this, we remove
         # any metadata that isn't supported. Maybe a better approach in the
@@ -112,6 +119,7 @@ class Embedder:
         if self.vectorstore_name == "Chroma":
             docs = chromautils.filter_complex_metadata(docs)
         self.vectorstore_client.add_documents(docs)
+        logging.debug("Embedded %d docs", len(docs))
 
     def get_embedder(self, name: str) -> Embeddings:
         if name == "custom":

@@ -51,6 +51,11 @@ class Loader:
         logging.debug("Loading dataset from %s", input_dir)
 
         if is_zipped:
+            # TODO(STP): Make this check cleaner.
+            dataset_name = os.path.basename(input_dir)[:-4]
+            assert dataset_name[:-4] == ".zip"
+            directory = os.path.join(unzip_dir, dataset_name)
+            self.loader.unzip_dataset(input_dir, directory)
             directory = self.unzip_dataset(input_dir, unzip_dir)
         else:
             directory = input_dir
@@ -78,12 +83,12 @@ class Loader:
     def load_file(
         self, save_docs: bool, output_dir: Optional[str], file_path: str
     ) -> None:
-        logging.debug(f"Loading {file_path}")
+        logging.debug("Loading file: %s", file_path)
         docs = self.file_to_docs(file_path)
         if save_docs:
             assert output_dir is not None
             save_docs_to_file(docs, file_path, output_dir)
-        logging.debug(f"{file_path} loaded")
+        logging.debug("Loaded file: %s", file_path)
 
     def file_to_docs(self, file_path: str) -> List[Document]:
         # NOTE(STP): Switching to unstructured's file-type detection in the
@@ -110,7 +115,7 @@ class Loader:
 
         elif file_extension == "csv" and "CSVLoader" in self.autoloaders:
             config = self.autoloader_config["CSVLoader"]
-            kwargs = {**config["required"], **config["CSVLoader"]["optional"]}
+            kwargs = {**config["required"], **config["optional"]}
             try:
                 loader = CSVLoader(file_path, **kwargs)
                 docs = loader.load()

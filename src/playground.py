@@ -12,7 +12,14 @@ from tmp import quick_ingest
 
 # os.environ['OPENAI_API_KEY'] = getpass.getpass('OpenAI API Key:')
 
-logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
+# logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
+
+# Configure the logging
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=logging.DEBUG,
+)
 
 
 class CustomLoader(Loader):
@@ -82,29 +89,30 @@ if __name__ == "__main__":
     #     num_workers=15,
     # )
 
-    # embedder = Embedder(
-    # vectorstore="FAISS"
-    # )
+    # embedder = Embedder(vectorstore="FAISS")
     # embedder.embed_dataset(
     #     "chunked_documents/raw_documents/financial_dataset",
     #     detailed_progress=True,
-    #     batch_size=1000
+    #     batch_size=100,
     # )
 
     # assert issubclass(CustomLoader, Loader)
-    # ingester = Ingester(loader=CustomLoader())
-    # ingester.ingest_dataset(
-    #     input_dir="../unzipped/financial_dataset",
-    #     # save_docs=True,
-    #     output_dir="test_output",
-    #     detailed_progress=True,
-    #     # max_files=10000,
-    # )
+    ingester = Ingester(loader=CustomLoader())
+    ingester.ingest_dataset(
+        # input_dir="unzipped/financial_dataset",
+        input_dir="football_dataset.zip",
+        is_zipped=True,
+        # save_docs=True,
+        output_dir="test_output",
+        detailed_progress=True,
+        batch_size=1,
+        # max_files=1,
+    )
 
     # ingester = Ingester()
 
-    quick_ingest(
-        input_dir="../unzipped/financial_dataset",
-        loader=CustomLoader(),
-        batch_size=1000,
-    )
+    # quick_ingest(
+    #     input_dir="../unzipped/financial_dataset",
+    #     loader=CustomLoader(),
+    #     batch_size=1000,
+    # )

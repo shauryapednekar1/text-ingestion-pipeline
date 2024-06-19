@@ -9,6 +9,12 @@ from smart_open import open
 
 
 def unzip_recursively(source_zip, target_dir, max_depth=100):
+    # TODO(STP): Make this check cleaner.
+    dataset_name = os.path.basename(source_zip)
+    assert dataset_name[-4:] == ".zip"
+    dataset_name = dataset_name[:-4]
+    unzipped_loc = os.path.join(target_dir, dataset_name)
+
     # HACK(STP): Setting the max depth is a workaround to prevent quines
     # (self-reproducing programs) from leading to unintended behavior.
     # See https://research.swtch.com/zip for more.
@@ -40,6 +46,8 @@ def unzip_recursively(source_zip, target_dir, max_depth=100):
                 os.remove(file_path)
                 print(f"Deleted {file_path}")
 
+    return unzipped_loc
+
 
 def save_docs_to_file(
     docs: List[Document],
@@ -58,7 +66,9 @@ def save_docs_to_file(
         for doc in docs:
             f.write(doc.json() + "\n")
 
+
 # def get_batched_files_from_dir(root_dir:str):
+
 
 def get_files_from_dir(root_dir: str):
     """Generator function to iterate over file paths recursively."""

@@ -1,5 +1,6 @@
 import glob
 import json
+import logging
 import multiprocessing
 import os
 from functools import partial
@@ -69,10 +70,12 @@ class Chunker:
     def chunk_file(
         self, save_chunks: bool, output_dir: str, file_path: str
     ) -> List[Document]:
+        logging.debug("Chunking file: %s", file_path)
         raw_docs = load_docs_from_jsonl(file_path)
         chunked_docs = self.chunk_docs(raw_docs)
         if save_chunks:
             save_docs_to_file(chunked_docs, file_path, output_dir)
+        logging.debug("Chunked file: %s", file_path)
         return chunked_docs
 
     def chunk_docs(self, raw_docs: List[Document]) -> List[Document]:
