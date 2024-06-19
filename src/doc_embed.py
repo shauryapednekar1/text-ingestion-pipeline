@@ -28,7 +28,6 @@ class Embedder:
         embedders_config: dict = DEFAULT_EMBEDDERS_CONFIG,
         vectorstore="FAISS",
         vectorstore_config: dict = DEFAULT_VECTORSTORES_CONFIG,
-        num_workers: int = 10,
     ) -> None:
         if embedder not in self.ALLOWED_EMBEDDERS:
             raise ValueError(
@@ -41,18 +40,23 @@ class Embedder:
                 f" Choose from: {self.ALLOWED_VECTORSTORES}"
             )
 
+        self.embedder_name: str = embedder
         self.embedders_config = embedders_config
-        self.embedder = self.get_embedder(embedder)
 
         # NOTE(STP): Storing the vectorstore name since it's needed for a
         # workaround for the Chroma vectorstore. See the `self.embed_docs()`
         # method for more.
         self.vectorstore_name: str = vectorstore
         self.vectorstore_config = vectorstore_config
+
+        self.embedder = self.get_embedder(embedder)
         self.vectorstore_client = self.get_vectorstore(vectorstore)
 
         self.documents_dir = documents_dir
-        self.num_workers = num_workers
+
+    def lazy_init_non_pickleable(self):
+        self.embedder = self.get_embedder(self.embedder_name)
+        self.vectorstore_client = self.get_vectorstore(self.vectorstore_name)
 
     def embed_dataset(
         self,
@@ -60,9 +64,6 @@ class Embedder:
         detailed_progress: bool = False,
         num_workers: Optional[int] = None,
     ) -> None:
-        if num_workers is None:
-            num_workers = self.num_workers
-
         num_files = None
         if detailed_progress:
             num_files = len(list(get_files_from_dir(input_dir)))
@@ -91,6 +92,7 @@ class Embedder:
         # any metadata that isn't supported. Maybe a better approach in the
         # future is stringifying the value instead.
         # See https://github.com/langchain-ai/langchain/issues/8556#issuecomment-1806835287 # noqa: E501
+        # vectorstore_client = self.get_vectorstore(self.vectorstore_name)
         if self.vectorstore_name == "Chroma":
             docs = chromautils.filter_complex_metadata(docs)
         self.vectorstore_client.add_documents(docs)
@@ -119,14 +121,14 @@ class Embedder:
             """
             raise NotImplementedError(error_message)
 
-        vectorstore_config = self.vectorstore_config[name]
-        vectorstore_config["embedding_function"] = self.embedder
+        config = self.vectorstore_config[name]
+        config["embedding_function"] = self.embedder
         if name == "Chroma":
-            return Chroma(**vectorstore_config)
+            return Chroma(**config)
         elif name == "FAISS":
-            vectorstore_config["index"] = faiss.IndexFlatL2(
+            config["index"] = faiss.IndexFlatL2(
                 self.embedder.client.get_sentence_embedding_dimension()
             )
-            vectorstore_config["docstore"] = InMemoryDocstore()
-            vectorstore_config["index_to_docstore_id"] = {}
-            return FAISS(**vectorstore_config)
+            config["docstore"] = InMemoryDocstore()
+            config["index_to_docstore_id"] = {}
+            return FAISS(**config)

@@ -23,11 +23,9 @@ class Loader:
     def __init__(
         self,
         autoloader_config: dict = DEFAULT_AUTOLOADER_CONFIG,
-        num_workers: int = 10,
     ) -> None:
         self.autoloader_config: dict = autoloader_config
         self.autoloaders: Set[str] = self._get_valid_autoloaders()
-        self.num_workers = 10
 
     def load_dataset(
         self,
@@ -37,7 +35,7 @@ class Loader:
         save_docs=False,
         output_dir=None,
         detailed_progress=False,
-        num_workers=None,
+        num_workers=10,
         max_files=None,
     ) -> None:
         """
@@ -45,9 +43,6 @@ class Loader:
         Takes in the location to a dataset and stores them as standardized
         Document objects.
         """
-        if num_workers is None:
-            num_workers = self.num_workers
-
         if save_docs and output_dir is None:
             raise ValueError(
                 "Must provide an output directory when saving documents."
@@ -56,15 +51,7 @@ class Loader:
         logging.debug("Loading dataset from %s", input_dir)
 
         if is_zipped:
-            os.makedirs(unzip_dir, exist_ok=True)
-            directory = os.path.join(
-                unzip_dir,
-                os.path.dirname(input_dir),
-                # TODO(STP): Use a helper to remove file extension here.
-                os.path.basename(input_dir)[:-4],
-            )
-            print(f"directory: {directory}")
-            unzip_recursively(input_dir, directory)
+            directory = self.unzip_dataset(input_dir, unzip_dir)
         else:
             directory = input_dir
 
@@ -98,7 +85,7 @@ class Loader:
             save_docs_to_file(docs, file_path, output_dir)
         logging.debug(f"{file_path} loaded")
 
-    def file_to_docs(self, file_path) -> List[Document]:
+    def file_to_docs(self, file_path: str) -> List[Document]:
         # NOTE(STP): Switching to unstructured's file-type detection in the
         # future might be worthwhile (although their check for whether a file
         # is a JSON file is whether or not json.load() succeeds, which might
@@ -151,6 +138,17 @@ class Loader:
         )
         docs = loader.load()
         return docs
+
+    def unzip_dataset(self, input_dir: str, unzip_dir: str) -> str:
+        os.makedirs(unzip_dir, exist_ok=True)
+        directory = os.path.join(
+            unzip_dir,
+            os.path.dirname(input_dir),
+            # TODO(STP): Maybe use a helper to remove file extension here.
+            os.path.basename(input_dir)[:-4],
+        )
+        unzip_recursively(input_dir, directory)
+        return directory
 
     def _get_valid_autoloaders(self) -> Set[str]:
         """Returns the set of valid autoloaders.

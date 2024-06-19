@@ -75,7 +75,7 @@ class Chunker:
             save_docs_to_file(chunked_docs, file_path, output_dir)
         return chunked_docs
 
-    def chunk_docs(self, raw_docs: List[Document]):
+    def chunk_docs(self, raw_docs: List[Document]) -> List[Document]:
         return self.splitter.split_documents(raw_docs)
 
     def _get_splitter(self, splitter: str) -> TextSplitter:
