@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="Documentation for the textual dataset ingestion pipeline" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Textual Dataset Ingestion Pipeline</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Textual Dataset Ingestion Pipeline
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
+    <ul class="current">
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="user-guide/installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="user-guide/usage/">Usage</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="api-reference/load/">Loader</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api-reference/chunk/">Chunker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api-reference/embedder/">Embedder</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api-reference/ingest/">Ingester</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api-reference/enhanced_document/">EnhancedDocument</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Textual Dataset Ingestion Pipeline</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h3 id="goal">Goal<a class="headerlink" href="#goal" title="Permanent link">&para;</a></h3>
+<p>The goal of this project was to design and implement a python package that lets
+the user easily ingest a textual dataset into a vectorstore. </p>
+<h3 id="priorities">Priorities<a class="headerlink" href="#priorities" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Convenience:  Ingest a dataset in just a few lines of code!</li>
+<li>Performance: Use multiprocessing where applicable to fully leverage your compute's capabilities. [^1]</li>
+<li>Customizability: Easily override the default loading, chunking, and embedding functions.</li>
+<li>Modularity: Use the loader, chunker, and embedder functionality separately if needed.</li>
+<li>Extendability: Heavy documentation and tests.</li>
+</ol>
+<p>Key design principles</p>
+<ol>
+<li>Avoid re-inventing the wheel: Leveraged open source libraries (mainly LangChain[^2]).</li>
+<li>DRY (Don't Repeat Yourself): Organized code in order to provide modularity and prevent duplication. </li>
+</ol>
+<h3 id="design-overview">Design Overview<a class="headerlink" href="#design-overview" title="Permanent link">&para;</a></h3>
+<h4 id="class-structure">Class Structure<a class="headerlink" href="#class-structure" title="Permanent link">&para;</a></h4>
+<p>Here's the high level overview of the classes and how they interact with each other.</p>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant I as Ingester
+    participant L as Loader
+    participant C as Chunker
+    participant E as Embedder
+
+    I-&gt;&gt;+L: initiate loading
+    L--&gt;&gt;-I: return EnhancedDocuments
+    I-&gt;&gt;+C: send documents for chunking
+    C--&gt;&gt;-I: return chunked documents
+    I-&gt;&gt;+E: send chunks for embedding
+    E--&gt;&gt;-I: return embedded documents
+    E-&gt;&gt;E: save embedded documents to vectorstore (optional)
+
+    Note right of I: Ingester coordinates all interactions and manages workflow
+</code></pre>
+<p>While the right level of abstraction when ingesting textual data into a vectorstore is somewhat subjective, three distinct steps stand out:</p>
+<ol>
+<li>Standardizing the input dataset.</li>
+<li>Chunking the standardized data.</li>
+<li>Embedding the chunked data.</li>
+</ol>
+<p>Additionally, we make the assumption that the usual access pattern here is that we would want to use the same loading, chunking, and embedding mechanism across multiple datasets within a given application, since this would provide consistency for downstream applications. With this assumption, it makes sense to have a <code>Loader</code>, <code>Chunker</code>, and <code>Embedder</code> class. Each instance of the class would share state information like how it should load, chunk, and embed data. We also have an <code>Ingester</code> class, which is responsible for transferring data through the instances of the three classes mentioned earlier.</p>
+<p>Another layer of abstraction that proves useful is that of a <code>EnhancedDocument</code> [^3], which is essentially a piece of text accompanied by some additional information. The key information any <code>Document</code> must have is the following:</p>
+<p>a. <code>source</code>: the path of the file. We assume the dataset is static (i.e. the raw data does not change).
+b. <code>page_content</code>: the actual text of the file.
+c. <code>metadata</code>: additional information about the document. Often useful for querying within the context of knowledge graphs.
+d. <code>document_hash</code>,  <code>content_hash</code>, <code>metadata_hash</code>: hashes of the content, metadata, and overall document. Useful when checking uniqueness.</p>
+<p>Since there is a one-to-many relationship between a <code>EnhancedDocument</code> and its chunks - the chunk retains the original document's source and metadata - the <em>type</em> of a chunk is the same as the type of an "unchunked" document. Hence, the package treats chunks data as <code>EnhancedDocuments</code> too.</p>
+<p>Each class performs actions related to its position in the ingestion pipeline. The unit of information being transferred between classes is an <code>EnhancedDocument</code>. </p>
+<h4 id="misc-implementation-details">Misc Implementation Details<a class="headerlink" href="#misc-implementation-details" title="Permanent link">&para;</a></h4>
+<ul>
+<li>For performance reasons, I've tried to use iterators and batching where possible, both to leverage vectorization and to be more space efficient. </li>
+<li>For its first iteration, this package does not try to implement upserts/idempotence, nor does it clean indexes (this is the main purpose of LangChain's Indexing API, but I didn't get the time to implement this).</li>
+<li>I did not try to optimize the package size/dependencies used - I figured this would not be the limiting factor here.</li>
+</ul>
+<h3 id="possible-enhancements">Possible Enhancements<a class="headerlink" href="#possible-enhancements" title="Permanent link">&para;</a></h3>
+<p>Given that my goal was to spend less than a week working on this, many tradeoffs were made. I'll highlight the main ones here.</p>
+<h4 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h4>
+<p>Due to time constraints, I focused on getting the package to a functional state first. This package contains a few unit tests for the <code>Loader</code> and <code>Chunker</code> classes, but they are by no means exhaustive. I plan on adding more unit tests in the future. For integration tests, a few scenarios I think would be worth testing are:</p>
+<ol>
+<li>Running the ingestion pipeline on the same dataset twice using the same vectorstore [^4].</li>
+<li>Create a sample dataset of a few sentences that have clear and distinct categories. Ingest this into a vectorstore and perform similarity search, verifying that it returns the expected results.</li>
+</ol>
+<h4 id="customizability">Customizability<a class="headerlink" href="#customizability" title="Permanent link">&para;</a></h4>
+<p>Providing more defaults for the Document Loaders, Embedders, and Vectorstores.  Also, providing the ability to easily select a relevance score for the vectorstore would be nice.</p>
+<h4 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h4>
+<p>This package doesn't leverage distributed computing/multiple GPUs efficiently right now. It might be worth sharding the dataset and parallelizing the work across available GPUs, or using something like Ray to do this (<a href="https://gist.github.com/waleedkadous/4c41f3ee66040f57d34c6a40e42b5969#file-build_vector_store_fast-py-L30">example</a>).</p>
+<h3 id="footnotes">Footnotes<a class="headerlink" href="#footnotes" title="Permanent link">&para;</a></h3>
+<p>[^1]: More work can be done to allow this package to fully leverage multiple GPUs. See the <em>Future Work</em> section.</p>
+<p>[^2]: However, I have come to realize that the convencience provided by LangChain's wrappers are sometimes <em>not</em> worth the limitations it enforces :) .</p>
+<p>[^3]: The package doesn't use the name <code>Document</code> since LangChain has claimed that name. Also, LangChain has a <code>_HashedDocument</code> class that offers similar functionality, but since its a private class, it isn't used by this package.</p>
+<p>[^4]: This currently fails due to limitations with Faiss' implementation. Fixing this either requires more custom logic for upserts, or switching to using LangChain's Indexing API. See Faiss' default configuration in <code>defaults.py</code> for more.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="user-guide/installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="user-guide/installation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.0
+Build Date UTC : 2024-06-20 23:47:24.525171+00:00
+-->
