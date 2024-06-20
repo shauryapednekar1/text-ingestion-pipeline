@@ -4,6 +4,7 @@ __pycache__
 foo**
 .DS_Store
 _*
+site
 
 # temp
 unzipped_data

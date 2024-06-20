@@ -2,10 +2,6 @@
 The goal of this project was to design and implement a python package that lets
 the user easily ingest a textual dataset into a vectorstore. 
 
-Here is a simple footnote[^6]. With some additional text after it.
-
-[^6]: My reference.
-
 ### Priorities
 
 1. Convenience:  Ingest a dataset in just a few lines of code!

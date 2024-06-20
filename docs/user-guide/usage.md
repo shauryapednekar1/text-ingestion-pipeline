@@ -21,9 +21,12 @@ ingester.ingest_dataset(
 )
 ```
 
+
 If you want to specify different configuration options for the default `Loader`,
 `Chunker`, or `Embedder`, you can do this by instantiating them individually
-and passing them to the `Ingester`. Here's an example where we set the
+and passing them to the `Ingester`.
+
+ Here's an example where we set the
 configuration options for the provided `JSONLoader`, The `Chunker` and 
 `Embedder` can be overridden in a similar manner.
 ```python
