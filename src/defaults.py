@@ -41,6 +41,5 @@ DEFAULT_EMBEDDERS_CONFIG = {
     },
 }
 DEFAULT_VECTORSTORES_CONFIG = {
-    "Chroma": {"collection_name": "langchain"},
     "FAISS": {},
 }

@@ -22,7 +22,7 @@ from utils import get_files_from_dir, load_docs_from_jsonl
 
 class Embedder:
     ALLOWED_EMBEDDERS = {"HuggingFace", "OpenAI", "custom"}
-    ALLOWED_VECTORSTORES = {None, "FAISS", "Chroma", "custom"}
+    ALLOWED_VECTORSTORES = {None, "FAISS", "custom"}
 
     def __init__(
         self,
@@ -47,16 +47,33 @@ class Embedder:
 
         self.embedder_name: str = embedder
         self.embedders_config = embedders_config
-        self.embedder = self.get_embedder(embedder)
-
-        # NOTE(STP): Storing the vectorstore name since it's needed for a
-        # workaround for the Chroma vectorstore. See the `self.embed_docs()`
-        # method for more.
+        self.embedder = self.set_embedder(embedder)
         if vectorstore is not None:
-            self.vectorstore_name: str = vectorstore
-            self.vectorstore_config = vectorstore_config
+            self.set_vectorstore(vectorstore, vectorstore_config)
 
-            self.vectorstore_client = self.get_vectorstore(vectorstore)
+    def set_vectorstore(self, name, config):
+        assert name is not None and name in self.ALLOWED_VECTORSTORES
+
+        if name == "custom":
+            error_message = """
+            "If using custom vectorstore, the Embedder.set_vectorstore() method
+            must be overridden.
+            """
+            raise NotImplementedError(error_message)
+
+        self.vectorstore_name = name
+        self.vectorstore_config = config
+        config = config[name]
+        config["embedding_function"] = self.embedder
+        if name == "FAISS":
+            config["index"] = faiss.IndexFlatL2(
+                self.embedder.client.get_sentence_embedding_dimension()
+            )
+            config["docstore"] = InMemoryDocstore()
+            config["index_to_docstore_id"] = {}
+            vectorstore_client = FAISS(**config)
+
+        self.vectorstore_client = vectorstore_client
 
     def embed_dataset(
         self,
@@ -83,41 +100,87 @@ class Embedder:
                 pbar.update(len(file_chunk))
 
     def embed_files(self, file_paths: List[str]) -> None:
-        # TODO(STP): Explain why this takes in multiple files.
+        # NOTE(STP): Allow passing multiple files to take advantage of batching
+        # benefits.
         logging.debug("Embedding files: %s", file_paths)
         docs = []
         for file_path in file_paths:
             docs.extend(load_docs_from_jsonl(file_path))
-        self.embed_docs(docs)
+        embeddings = self.embed_docs(docs)
         logging.debug("Embedded files: %s", file_paths)
+        return docs, embeddings
 
-    def embed_docs(self, docs: List[EnhancedDocument]) -> None:
+    def embed_and_save_files(self, file_paths):
+        self._verify_vectorstore_client()
+        all_docs = []
+        all_embeddings = []
+        for file in file_paths:
+            docs, embeddings = self.embed_files(file_paths)
+            # NOTE(STP): We're not calling self.embed_and_save_docs() here
+            # in order to allow us to batch embed multiple files.
+            all_docs.extend(docs)
+            all_embeddings.extend(embeddings)
+        self.save_embeddings(all_docs, all_embeddings)
+
+    def embed_and_save_docs(self, docs: List[EnhancedDocument]) -> None:
+        self._verify_vectorstore_client()
+        embeddings = self.embed_docs(docs)
+        self.save_embeddings(docs, embeddings)
+
+    def save_embeddings(self, docs, embeddings):
+        self._verify_vectorstore_client()
+        logging.debug("Saving %d embedded docs to vectorstore docs", len(docs))
+        ids = [doc.document_hash for doc in docs]
+        if len(ids) != len(set(ids)):
+            # TODO(STP): Improve space efficiency here.
+            unique_docs = []
+            unique_embeddings = []
+            unique_ids = []
+            seen = set()
+            for i, curr_id in enumerate(ids):
+                if curr_id in seen:
+                    logging.debug(
+                        "Found multiple documents from %s with the "
+                        " same content hash. '%s...'",
+                        docs[i].metadata["source"],
+                        docs[i].page_content[:30],
+                    )
+                else:
+                    unique_ids.append(curr_id)
+                    unique_docs.append(docs[i])
+                    unique_embeddings.append(embeddings[i])
+                    seen.add(curr_id)
+
+            docs = unique_docs
+            ids = unique_ids
+            embeddings = unique_embeddings
+
+        texts = [doc.page_content for doc in docs]
+        text_embeddings = zip(texts, embeddings)
+        metadatas = [doc.metadata for doc in docs]
+        self.vectorstore_client.add_embeddings(
+            text_embeddings=text_embeddings, ids=ids, metadatas=metadatas
+        )
+        logging.debug("Saved %d embedded docs to vectorstore docs", len(docs))
+        return ids
+
+    def embed_docs(self, docs: List[EnhancedDocument]) -> List[List[float]]:
+        # NOTE(STP): This ignores metadata. If we want to include metadata in
+        # the embedding, we would need to combine it with the page content
+        # and stringify it in some manner.
         # TODO(STP): We might want to batch embed documents here if the number
         # of documents exceed a certain threshold. Would need to look more into
         # if and when that would be useful.
         logging.debug("Embedding %d docs", len(docs))
-
-        # HACK(STP): The Chroma vectorstore doesn't support some data types
-        # for the document's metadata values. To work around this, we remove
-        # any metadata that isn't supported. Maybe a better approach in the
-        # future is stringifying the value instead.
-        # See https://github.com/langchain-ai/langchain/issues/8556#issuecomment-1806835287 # noqa: E501
-        # vectorstore_client = self.get_vectorstore(self.vectorstore_name)
-        if self.vectorstore_name == "Chroma":
-            docs = chromautils.filter_complex_metadata(docs)
-
-        ids = [doc.document_hash for doc in docs]
-        if len(ids) != len(set(ids)):
-            docs = self.filter_duplicates(docs)
-            ids = [doc.document_hash for doc in docs]
-
-        self.vectorstore_client.add_documents(docs, ids=ids)
+        page_contents = [doc.page_content for doc in docs]
+        embeddings = self.embedder.embed_documents(page_contents)
         logging.debug("Embedded %d docs", len(docs))
+        return embeddings
 
-    def get_embedder(self, name: str) -> Embeddings:
+    def set_embedder(self, name: str) -> Embeddings:
         if name == "custom":
             error_message = """
-            "If using custom embedder, the Embedder.get_embedder() method
+            "If using custom embedder, the Embedder.set_embedder() method
             must be overridden.
             """
             raise NotImplementedError(error_message)
@@ -130,40 +193,8 @@ class Embedder:
         else:
             raise ValueError("Embedding not recognized: %s", name)
 
-    def get_vectorstore(self, name: str):
-        if name == "custom":
-            error_message = """
-            "If using custom vectorstore, the Embedder.get_vectorstore() method
-            must be overridden.
-            """
-            raise NotImplementedError(error_message)
-
-        config = self.vectorstore_config[name]
-        config["embedding_function"] = self.embedder
-        if name == "Chroma":
-            return Chroma(**config)
-        elif name == "FAISS":
-            config["index"] = faiss.IndexFlatL2(
-                self.embedder.client.get_sentence_embedding_dimension()
+    def _verify_vectorstore_client(self):
+        if self.vectorstore_client is None:
+            raise ValueError(
+                "Vectorstore must be set when saving document embeddings."
             )
-            config["docstore"] = InMemoryDocstore()
-            config["index_to_docstore_id"] = {}
-            return FAISS(**config)
-
-    def filter_duplicates(self, documents):
-        hash_freq = defaultdict(list)
-        for doc in documents:
-            hash_freq[doc.content_hash].append(doc)
-
-        result = []
-        for content_hash, docs in hash_freq.items():
-            if len(docs) > 1:
-                logging.debug(
-                    "Found multiple documents from %s with the same content "
-                    "hash. '%s...'",
-                    docs[0].metadata["source"],
-                    docs[0].page_content[:30],
-                )
-            result.append(docs[0])
-
-        return result

@@ -71,7 +71,7 @@ class Ingester:
                 batched_docs.extend(docs)
 
                 if i - prev_counter >= batch_size:
-                    self.embedder.embed_docs(batched_docs)
+                    self.embedder.embed_and_save_docs(batched_docs)
                     batched_docs = []
 
                     pbar.update(i - prev_counter)
@@ -81,7 +81,7 @@ class Ingester:
                     break
 
             if batched_docs:
-                self.embedder.embed_docs(batched_docs)
+                self.embedder.embed_and_save_docs(batched_docs)
 
         with open("vectorstore.pkl", "wb") as f:
             pickle.dump(self.embedder.vectorstore_client, f)
