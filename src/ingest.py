@@ -61,7 +61,7 @@ class Ingester:
             is_zipped (bool): Whether the input directory is zipped.
             unzip_dir (str): Directory to unzip files if zipped.
             save_intermediate_docs (bool): Whether to save the loaded and
-                chunked documents.
+                chunked documents to disk.
             output_dir (Optional[str]): Directory where processed documents are
                 saved.
             num_workers (int): Number of worker processes to use.

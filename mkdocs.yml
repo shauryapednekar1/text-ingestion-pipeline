@@ -1,0 +1,21 @@
+site_name: Textual Dataset Ingestion Pipeline
+site_description: Documentation for the textual dataset ingestion pipeline
+theme:
+  name: material
+
+plugins:
+  - search
+  - mkdocstrings
+
+markdown_extensions:
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - API Reference:
+    - Loader: api-reference/load.md
+    - Chunker: api-reference/chunk.md
+    - Embedder: api-reference/embedder.md
+    - Ingester: api-reference/ingest.md
+    - EnhancedDocument: api-reference/enhanced_document.md

@@ -18,7 +18,12 @@ from utils import get_files_from_dir, save_docs_to_file, unzip_recursively
 
 
 class Loader:
-    """Load files into a standardized format."""
+    """Load files into a standardized format.
+
+    Potential functions to override if implementing a custom Loader class:
+    - `file_to_docs()`: the logic for how a file is converted to an
+        EnhancedDocument.
+    """
 
     def __init__(
         self,

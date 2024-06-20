@@ -26,6 +26,13 @@ warnings.filterwarnings(
 
 
 class Embedder:
+    """Creating embeddings for documents. Optionally store to a vectorstore.
+
+    Potential functions to override if implementing a custom Embedder class:
+    - `get_embedder()`: the logic for how a file is converted to an
+        EnhancedDocument.
+    """
+
     ALLOWED_EMBEDDERS = {"HuggingFace", "OpenAI", "custom"}
     ALLOWED_VECTORSTORES = {None, "FAISS", "custom"}
 
@@ -109,7 +116,7 @@ class Embedder:
                 if not file_chunk:
                     break
 
-                self.embed__and_insert_files(file_chunk)
+                self.embed_and_insert_files(file_chunk)
                 pbar.update(len(file_chunk))
 
     def set_vectorstore(self, name: str, config: Dict):
@@ -120,9 +127,6 @@ class Embedder:
         Args:
             name (str): Name of the vector store to configure.
             config (dict): Configuration dictionary for the vector store.
-
-        Returns:
-            tuple: A tuple containing lists of ids, docs, and their embeddings.
 
         Raises:
             NotImplementedError: If a 'custom' vector store is specified but
@@ -202,7 +206,7 @@ class Embedder:
         all_embeddings = []
         for file in file_paths:
             curr_docs, curr_embeddings = self.embed_files(file_paths)
-            # NOTE(STP): We're not calling self.embed_and_insert_curr_docs() here
+            # NOTE(STP): We're not calling self.embed_and_insert_docs() here
             # in order to allow us to batch embed multiple files.
             all_docs.extend(curr_docs)
             all_embeddings.extend(curr_embeddings)

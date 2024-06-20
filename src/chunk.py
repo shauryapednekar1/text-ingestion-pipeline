@@ -13,9 +13,14 @@ from utils import get_files_from_dir, load_docs_from_jsonl, save_docs_to_file
 
 
 class Chunker:
-    """Chunk documents."""
+    """Chunk documents.
 
-    ALLOWED_SPLITTERS = {"recursive"}
+    Potential functions to override if implementing a custom Chunker class:
+    - `chunk_docs()`: the logic for how a document is is chunked.
+    - `get_splitter()`: the logic for which splitter to use.
+    """
+
+    ALLOWED_SPLITTERS = {"custom", "recursive"}
 
     def __init__(
         self,
@@ -29,7 +34,7 @@ class Chunker:
 
         Args:
             splitter (str): The name of the splitter to use. Currently supports
-                'recursive' only.
+                'custom' or 'recursive'.
             splitter_config (Dict): Configuration dictionary for the chosen
                 splitter.
             num_workers (int): Number of worker processes to use for chunking.
@@ -46,7 +51,7 @@ class Chunker:
                 f"{splitter} is not a valid splitter."
                 f" Choose from: {self.ALLOWED_SPLITTERS}"
             )
-        self.splitter = self._get_splitter(splitter)
+        self.splitter = self.get_splitter(splitter)
 
     def chunk_dataset(
         self,
@@ -139,7 +144,7 @@ class Chunker:
         docs = [EnhancedDocument.from_document(doc) for doc in docs]
         return docs
 
-    def _get_splitter(self, splitter: str) -> TextSplitter:
+    def get_splitter(self, splitter: str) -> TextSplitter:
         """
         Retrieves the appropriate document splitter based on the specified type.
 
@@ -150,8 +155,17 @@ class Chunker:
             TextSplitter: An instance of a TextSplitter.
 
         Raises:
+            NotImplementedError: If a 'custom' splitter is specified but
+                not implemented.
             ValueError: If the specified splitter type is not recognized.
         """
+        if splitter == "custom":
+            error_message = """
+            "If using custom vectorstore, the Embedder.set_vectorstore() method
+            must be overridden.
+            """
+            raise NotImplementedError(error_message)
+
         if splitter == "recursive":
             kwargs = self.splitter_config["recursive"]
             return RecursiveCharacterTextSplitter(**kwargs)

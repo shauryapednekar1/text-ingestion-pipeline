@@ -62,10 +62,10 @@ class TestChunker(unittest.TestCase):
         """Test the splitting of documents into chunks."""
         raw_docs = [self.enhanced_doc1]
         expected_chunks = [self.enhanced_doc2, self.enhanced_doc3]
-        with patch.object(Chunker, "_get_splitter") as mock_get_splitter:
+        with patch.object(Chunker, "get_splitter") as mockget_splitter:
             splitter = MagicMock()
             splitter.split_documents.return_value = expected_chunks
-            mock_get_splitter.return_value = splitter
+            mockget_splitter.return_value = splitter
 
             chunker = Chunker("recursive", self.splitter_config)
             result = chunker.chunk_docs(raw_docs)
