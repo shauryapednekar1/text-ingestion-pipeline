@@ -1,5 +1,6 @@
 import json
 import logging
+import pickle
 from chunk import Chunker
 from typing import Iterable, List
 
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     # )
 
     # embedder = Embedder(vectorstore="FAISS")
-    # embedder.embed_dataset(
+    # embedder.embed_and_insert_dataset(
     #     "chunked_documents/raw_documents/financial_dataset",
     #     detailed_progress=True,
     #     batch_size=100,
@@ -100,8 +101,13 @@ if __name__ == "__main__":
         output_dir="test_output",
         detailed_progress=True,
         batch_size=100,
-        # max_files=1,
+        max_files=1000,
     )
+
+    # with open("vectorstore.pkl", "wb") as f:
+    #     pickle.dump(ingester.embedder.vectorstore_instance, f)
+
+    ingester.embedder.vectorstore_instance.save_local("faiss_index")
 
     # ingester = Ingester()
 

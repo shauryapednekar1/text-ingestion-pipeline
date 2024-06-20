@@ -1,10 +1,7 @@
-import glob
-import json
 import logging
 import multiprocessing
-import os
 from functools import partial
-from typing import Callable, Dict, Iterable, List, Optional, Union
+from typing import Dict, List, Optional
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.base import TextSplitter
@@ -16,7 +13,7 @@ from utils import get_files_from_dir, load_docs_from_jsonl, save_docs_to_file
 
 
 class Chunker:
-    ALLOWED_SPLITTERS = {"recursive"}  # , 'markdown', 'code'}
+    ALLOWED_SPLITTERS = {"recursive"}
 
     def __init__(
         self,
@@ -24,6 +21,21 @@ class Chunker:
         splitter_config: Dict = DEFAULT_SPLITTERS_CONFIG,
         num_workers: int = 10,
     ) -> None:
+        """
+        Initializes the Chunker instance with specified splitter configuration
+        and multiprocessing settings.
+
+        Args:
+            splitter (str): The name of the splitter to use. Currently supports
+                'recursive' only.
+            splitter_config (Dict): Configuration dictionary for the chosen
+                splitter.
+            num_workers (int): Number of worker processes to use for chunking.
+
+        Raises:
+            ValueError: If the specified splitter is not supported.
+        """
+
         self.splitter_config = splitter_config
         self.num_workers = num_workers
 
@@ -37,24 +49,35 @@ class Chunker:
     def chunk_dataset(
         self,
         input_dir: str,
-        save_chunks: bool = False,
-        output_dir: Optional[str] = None,
         detailed_progress: bool = False,
+        output_dir: Optional[str] = None,
         num_workers: Optional[int] = None,
     ) -> None:
+        """
+        Processes and chunks all documents in a specified directory.
+
+        Args:
+            input_dir (str): Directory containing the documents to be chunked.
+            output_dir (str, optional): Directory to save the chunked documents
+                if save_chunks is True.
+            detailed_progress (bool): Whether to show detailed progress during
+                the chunking process.
+            num_workers (int, optional): Number of worker processes to use;
+                defaults to the instance's num_workers if not provided.
+
+        Raises:
+            ValueError: If `save_chunks` is True but `output_dir` is not provided.
+        """
         if num_workers is None:
             num_workers = self.num_workers
-
-        if save_chunks and output_dir is None:
-            raise ValueError(
-                "Must provide an output directory when saving documents."
-            )
 
         num_files = None
         if detailed_progress:
             num_files = len(list(get_files_from_dir(input_dir)))
 
-        partial_func = partial(self.chunk_file, save_chunks, output_dir)
+        partial_func = partial(
+            self.chunk_file, save_chunks=True, output_dir=output_dir
+        )
 
         with tqdm(
             total=num_files, desc="Chunking files", unit=" files", smoothing=0
@@ -67,12 +90,28 @@ class Chunker:
                     pbar.update(1)
 
     def chunk_file(
-        self, save_chunks: bool, output_dir: str, file_path: str
+        self, save_chunks: bool, output_dir: Optional[str], file_path: str
     ) -> List[EnhancedDocument]:
+        """
+        Chunks a single file into smaller EnhancedDocuments.
+
+        Args:
+            save_chunks (bool): Whether to save the chunked documents.
+            output_dir (str): Directory to save the documents if save_chunks
+                is True.
+            file_path (str): Path to the file to be chunked.
+
+        Returns:
+            List[EnhancedDocument]: A list of chunked documents.
+        """
         logging.debug("Chunking file: %s", file_path)
         raw_docs = load_docs_from_jsonl(file_path)
         chunked_docs = self.chunk_docs(raw_docs)
         if save_chunks:
+            if output_dir is None:
+                raise ValueError(
+                    "Must provide an output directory when saving documents."
+                )
             save_docs_to_file(chunked_docs, file_path, output_dir)
         logging.debug("Chunked file: %s", file_path)
         return chunked_docs
@@ -80,14 +119,37 @@ class Chunker:
     def chunk_docs(
         self, raw_docs: List[EnhancedDocument]
     ) -> List[EnhancedDocument]:
+        """
+        Splits a list of EnhancedDocuments into smaller, chunked
+        EnhancedDocuments.
+
+        Args:
+            raw_docs (List[EnhancedDocument]): List of documents to be chunked.
+
+        Returns:
+            List[EnhancedDocument]: A list of chunked documents.
+        """
 
         chunked_docs = self.splitter.split_documents(raw_docs)
+        # NOTE(STP): We need to remove the hashes here since the page content
+        # for the chunk differs from the parent document.
         docs = [EnhancedDocument.remove_hashes(doc) for doc in chunked_docs]
         docs = [EnhancedDocument.from_document(doc) for doc in docs]
-        s = set([doc.content_hash for doc in docs])
         return docs
 
     def _get_splitter(self, splitter: str) -> TextSplitter:
+        """
+        Retrieves the appropriate document splitter based on the specified type.
+
+        Args:
+            splitter (str): The name of the splitter to use.
+
+        Returns:
+            TextSplitter: An instance of a TextSplitter.
+
+        Raises:
+            ValueError: If the specified splitter type is not recognized.
+        """
         if splitter == "recursive":
             kwargs = self.splitter_config["recursive"]
             return RecursiveCharacterTextSplitter(**kwargs)

@@ -41,5 +41,26 @@ DEFAULT_EMBEDDERS_CONFIG = {
     },
 }
 DEFAULT_VECTORSTORES_CONFIG = {
-    "FAISS": {},
+    # NOTE(STP): Currently, the LangChain FAISS vectorstore does not handle
+    # upserts well. If you try to insert the same value twice, it will fail.
+    # To handle this, we would probably need to switch to using LangChain's
+    # Indexing API, or come up with some custom logic for this.
+    # See: https://github.com/langchain-ai/langchain/issues/3896 and
+    # https://python.langchain.com/v0.1/docs/modules/data_connection/indexing/
+    "FAISS": {
+        "init_args": {},
+        "load_local": True,
+        "load_local_args": {
+            "folder_path": "faiss_index",
+            "index_name": "index",
+            # NOTE(STP): This must be set to true when loading from local
+            # pickled file.
+            "allow_dangerous_deserialization": True,
+        },
+        "save_local_config": {
+            "save_local": False,
+            "folder_path": "faiss_index",
+            "index_name": "index",
+        },
+    },
 }

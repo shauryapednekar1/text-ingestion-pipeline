@@ -1,8 +1,6 @@
 import logging
 import multiprocessing
 import os
-import tempfile
-import zipfile
 from functools import partial
 from typing import List, Optional, Set
 
@@ -25,38 +23,60 @@ class Loader:
         self,
         autoloader_config: dict = DEFAULT_AUTOLOADER_CONFIG,
     ) -> None:
+        """
+        Initializes a Loader instance with a given autoloader configuration.
+
+        Args:
+            autoloader_config (dict): Configuration for autoloaders that
+                determines how different file types are processed.
+
+        Attributes:
+            autoloader_config (dict): Stores the provided autoloader
+                configuration.
+            autoloaders (Set[str]): Set of valid autoloaders based on the
+                configuration.
+        """
         self.autoloader_config: dict = autoloader_config
         self.autoloaders: Set[str] = self._get_valid_autoloaders()
 
     def load_dataset(
         self,
         input_dir: str,
+        output_dir: str,
         is_zipped: bool = False,
-        unzip_dir="unzipped",
-        save_docs=False,
-        output_dir=None,
-        detailed_progress=False,
-        num_workers=10,
-        max_files=None,
+        unzip_dir: str = "unzipped",
+        detailed_progress: bool = False,
+        num_workers: int = 10,
+        max_files: Optional[int] = None,
     ) -> None:
         """
+        Loads a dataset from a specified directory, processes files into
+        EnhancedDocument objects, and saves them to disk.
 
-        Takes in the location to a dataset and stores them as standardized
-        EnhancedDocument objects.
+        Args:
+            input_dir (str): Path to the directory containing the dataset.
+            is_zipped (bool): Whether the dataset is in a zipped format.
+            unzip_dir (str): Directory to unzip files to, if applicable.
+            output_dir (str): Directory where processed documents should be
+                saved.
+            detailed_progress (bool): Whether to display detailed progress
+                information.
+            num_workers (int): Number of worker processes to use for loading
+                files.
+            max_files (int, optional): Maximum number of files to process.
         """
-        if save_docs and output_dir is None:
-            raise ValueError(
-                "Must provide an output directory when saving documents."
-            )
-
         logging.debug("Loading dataset from %s", input_dir)
 
         if is_zipped:
             # TODO(STP): Make this check cleaner.
             dataset_name = os.path.basename(input_dir)[:-4]
-            assert dataset_name[:-4] == ".zip"
+            if dataset_name[:-4] != ".zip":
+                raise ValueError(
+                    "Zipped dataset name must end in '.zip'. Received dataset "
+                    "name: %s",
+                    dataset_name,
+                )
             directory = os.path.join(unzip_dir, dataset_name)
-            self.loader.unzip_dataset(input_dir, directory)
             directory = self.unzip_dataset(input_dir, unzip_dir)
         else:
             directory = input_dir
@@ -65,7 +85,9 @@ class Loader:
         if detailed_progress:
             num_files = len(list(get_files_from_dir(directory)))
 
-        partial_func = partial(self.load_file, save_docs, output_dir)
+        partial_func = partial(
+            self.load_file, save_docs=True, output_dir=output_dir
+        )
 
         with tqdm(
             total=num_files, desc="Loading files", unit="files", smoothing=0
@@ -84,6 +106,19 @@ class Loader:
     def load_file(
         self, save_docs: bool, output_dir: Optional[str], file_path: str
     ) -> None:
+        """
+        Loads a single file from the given path and optionally saves the
+        processed document.
+
+        Args:
+            save_docs (bool): Whether to save the processed documents.
+            output_dir (str, optional): Directory where processed documents
+                should be saved.
+            file_path (str): Path to the file being loaded.
+
+        Raises:
+            AssertionError: If `save_docs` is True but `output_dir` is None.
+        """
         logging.debug("Loading file: %s", file_path)
         docs = self.file_to_docs(file_path)
         if save_docs:
@@ -92,6 +127,17 @@ class Loader:
         logging.debug("Loaded file: %s", file_path)
 
     def file_to_docs(self, file_path: str) -> List[EnhancedDocument]:
+        """
+        Processes a file into a list of EnhancedDocument objects based on the
+        file extension and configured autoloaders.
+
+        Args:
+            file_path (str): Path to the file being processed.
+
+        Returns:
+            List[EnhancedDocument]: A list of EnhancedDocument objects created
+                from the file.
+        """
         # NOTE(STP): Switching to unstructured's file-type detection in the
         # future might be worthwhile (although their check for whether a file
         # is a JSON file is whether or not json.load() succeeds, which might
@@ -122,7 +168,7 @@ class Loader:
 
             except Exception as e:
                 logging.debug(
-                    "Filepath %s failed to load using CSVLoader: %s\n",
+                    "Filepath %s failed to load using CSVLoader: %s\n"
                     "Falling back to generic loader.",
                     file_path,
                     e,
@@ -137,6 +183,17 @@ class Loader:
         return enhanced_docs
 
     def fallback_loader(self, file_path) -> List[Document]:
+        """
+        Uses a generic loader to process files when specific loaders are not
+        applicable or fail.
+
+        Args:
+            file_path (str): Path to the file being loaded.
+
+        Returns:
+            List[Document]: A list of Document objects loaded using the
+                fallback method.
+        """
         logging.info("Using fallback loader for %s.", file_path)
         loader = UnstructuredFileLoader(
             file_path,
@@ -147,6 +204,17 @@ class Loader:
         return docs
 
     def unzip_dataset(self, input_dir: str, unzip_dir: str) -> str:
+        """
+        Unzips a dataset from a specified input directory into a target unzip
+        directory.
+
+        Args:
+            input_dir (str): Path to the zipped dataset.
+            unzip_dir (str): Target directory for the unzipped files.
+
+        Returns:
+            str: Path to the directory containing the unzipped files.
+        """
         os.makedirs(unzip_dir, exist_ok=True)
         directory = os.path.join(
             unzip_dir,
@@ -164,6 +232,10 @@ class Loader:
         the autoloader exist in the loader_config.
 
         This function will only be called once per dataset.
+
+        Returns:
+            Set[str]: A set of autoloaders that have all required arguments
+                available.
         """
         autoloaders = set()
         for autoloader, config in self.autoloader_config.items():

@@ -5,3 +5,4 @@ exclude =
     .git,
     __pycache__,
     venv/
+docstring-convention=google

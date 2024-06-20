@@ -33,6 +33,8 @@ def _hash_nested_dict_to_uuid(data: dict[Any, Any]) -> uuid.UUID:
 class EnhancedDocument(Document):
     """A hashed document with a unique ID."""
 
+    source: str
+    """The file path of the document."""
     document_hash: str
     """The hash of the document including content and metadata."""
     content_hash: str
@@ -40,9 +42,8 @@ class EnhancedDocument(Document):
     metadata_hash: str
     """The hash of the document metadata."""
 
-    # @classmethod
     @root_validator(pre=True)
-    def calculate_hashes(cls, values) -> Dict[str, Any]:
+    def calculate_hashes_and_source(cls, values) -> Dict[str, Any]:
         """Calculate content, metadata and overall document hash.
 
         Also, update the metadata to include these hashes in there, in order
@@ -50,6 +51,14 @@ class EnhancedDocument(Document):
         """
         content = values.get("page_content")
         metadata = values.get("metadata")
+
+        if "source" not in metadata:
+            raise KeyError(
+                "'source' not found in metadata. Each EnhancedDocument must "
+                "have a source."
+            )
+
+        values["source"] = metadata["source"]
 
         forbidden_keys = ("document_hash", "content_hash", "metadata_hash")
 
