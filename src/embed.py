@@ -165,7 +165,7 @@ class Embedder:
 
     def embed_files(
         self, file_paths: List[str]
-    ) -> List[EnhancedDocument, List[List[float]]]:
+    ) -> Tuple[EnhancedDocument, List[List[float]]]:
         """
         Embeds a batch of files specified by their paths.
 

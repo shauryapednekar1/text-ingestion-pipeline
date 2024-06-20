@@ -13,6 +13,8 @@ from utils import get_files_from_dir, load_docs_from_jsonl, save_docs_to_file
 
 
 class Chunker:
+    """Chunk documents."""
+
     ALLOWED_SPLITTERS = {"recursive"}
 
     def __init__(

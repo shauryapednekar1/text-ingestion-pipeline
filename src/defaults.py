@@ -1,3 +1,5 @@
+"""Defaults used by the ingestion pipeline."""
+
 DEFAULT_AUTOLOADER_CONFIG = {
     "JSONLoader": {
         "required": {
@@ -49,7 +51,7 @@ DEFAULT_VECTORSTORES_CONFIG = {
     # https://python.langchain.com/v0.1/docs/modules/data_connection/indexing/
     "FAISS": {
         "init_args": {},
-        "load_local": True,
+        "load_local": False,
         "load_local_args": {
             "folder_path": "faiss_index",
             "index_name": "index",

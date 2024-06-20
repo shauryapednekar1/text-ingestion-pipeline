@@ -17,6 +17,7 @@ from utils import get_files_from_dir, save_docs_to_file
 
 
 class Ingester:
+    """Ingest files into a vectorstore."""
 
     def __init__(
         self,

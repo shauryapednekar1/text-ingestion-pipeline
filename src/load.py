@@ -18,6 +18,7 @@ from utils import get_files_from_dir, save_docs_to_file, unzip_recursively
 
 
 class Loader:
+    """Load files into a standardized format."""
 
     def __init__(
         self,
@@ -105,7 +106,7 @@ class Loader:
 
     def load_file(
         self, save_docs: bool, output_dir: Optional[str], file_path: str
-    ) -> None:
+    ) -> List[EnhancedDocument]:
         """
         Loads a single file from the given path and optionally saves the
         processed document.
@@ -125,6 +126,7 @@ class Loader:
             assert output_dir is not None
             save_docs_to_file(docs, file_path, output_dir)
         logging.debug("Loaded file: %s", file_path)
+        return docs
 
     def file_to_docs(self, file_path: str) -> List[EnhancedDocument]:
         """
@@ -146,7 +148,7 @@ class Loader:
         file_extension = file_path.split(".")[-1]
         if file_extension == "json" and "JSONLoader" in self.autoloaders:
             config = self.autoloader_config["JSONLoader"]
-            kwargs = {**config["required"], **config["JSONLoader"]["optional"]}
+            kwargs = {**config["required"], **config["optional"]}
             try:
                 loader = JSONLoader(file_path, **kwargs)
                 docs = loader.load()

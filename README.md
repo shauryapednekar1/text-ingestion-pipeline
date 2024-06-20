@@ -1,15 +1,9 @@
----
-layout: page
-title: Textual Dataset Ingestion Pipeline 
-description: A python package that lets you easily ingest new textual datasets.
----
-
 ### Goal
 The goal of this project was to design and implement a python package that lets
 the user easily ingest a textual dataset into a vectorstore. 
 
 ### Priorities
-1. Convenience:  Ingest a dataset in less than ten lines of code!
+1. Convenience:  Ingest a dataset in just a few lines of code!
 2. Performance: Use multiprocessing where applicable to fully leverage your compute's capabilities.[^1]
 3. Customizability: Easily override the default loading, chunking, and embedding functions.
 4. Modularity: Use the loader, chunker, and embedder functionality separately if needed.
@@ -17,7 +11,7 @@ the user easily ingest a textual dataset into a vectorstore.
 
 Key design principles
 1. Avoid re-inventing the wheel: Leveraged open source libraries (mainly LangChain[^2]).
-2. DRY (Don't Repeat Yourself): Organized code in order to provide modularity and prevent duplication . 
+2. DRY (Don't Repeat Yourself): Organized code in order to provide modularity and prevent duplication. 
 
 ### Design Overview
 
@@ -45,6 +39,7 @@ While the right level of abstraction when ingesting textual data into a vectorst
 1. Standardizing the input dataset.
 2. Chunking the standardized data.
 3. Embedding the chunked data.
+
 Additionally, we make the assumption that the usual access pattern here is that we would want to use the same loading, chunking, and embedding mechanism across multiple datasets within a given application, since this would provide consistency for downstream applications. With this assumption, it makes sense to have a `Loader`, `Chunker`, and `Embedder` class. Each instance of the class would share state information like how it should load, chunk, and embed data. We also have an `Ingester` class, which is responsible for transferring data through the instances of the three classes mentioned earlier.
 
 Another layer of abstraction that proves useful is that of a `EnhancedDocument` [^3], which is essentially a piece of text accompanied by some additional information. The key information any `Document` must have is the following:
@@ -58,20 +53,27 @@ Since there is a one-to-many relationship between a `EnhancedDocument` and its c
 Each class performs actions related to its position in the ingestion pipeline. The unit of information being transferred between classes is an `EnhancedDocument`. 
 
 #### Misc Implementation Details
+
 - For performance reasons, I've tried to use iterators and batching where possible, both to leverage vectorization and to be more space efficient. 
 - For its first iteration, this package does not try to implement upserts/idempotence, nor does it clean indexes (this is the main purpose of LangChain's Indexing API, but I didn't get the time to implement this).
 - I did not try to optimize the package size/dependencies used - I figured this would not be the limiting factor here.
+
 ### Possible Enhancements
+
 Given that my goal was to spend less than a week working on this, many tradeoffs were made. I'll highlight the main ones here.
+
 #### Testing
-Due to time constraints, I focused on getting the package to a functional state first. I'm currently working on adding tests, but it might take a few days. Both unit tests and integration tests are required in order to make this package robust. For integration tests, a few scenarios I think would be worth testing are:
+
+Due to time constraints, I focused on getting the package to a functional state first. This package contains a few unit tests for the `Loader` and `Chunker` classes, but they are by no means exhaustive. I plan on adding more unit tests in the future. For integration tests, a few scenarios I think would be worth testing are:
 1. Running the ingestion pipeline on the same dataset twice using the same vectorstore [^4].
 2. Create a sample dataset of a few sentences that have clear and distinct categories. Ingest this into a vectorstore and perform similarity search, verifying that it returns the expected results.
 
 #### Customizability
+
 Providing more defaults for the Document Loaders, Embedders, and Vectorstores.  Also, providing the ability to easily select a relevance score for the vectorstore would be nice.
 
 #### Performance
+
 This package doesn't leverage distributed computing/multiple GPUs efficiently right now. It might be worth sharding the dataset and parallelizing the work across available GPUs, or using something like Ray to do this ([example](https://gist.github.com/waleedkadous/4c41f3ee66040f57d34c6a40e42b5969#file-build_vector_store_fast-py-L30)).
 
 ### Footnotes
