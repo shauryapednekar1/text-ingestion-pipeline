@@ -1,36 +1,39 @@
 import logging
 import multiprocessing
+from collections import defaultdict
 from itertools import islice
 from multiprocessing import Queue
 from typing import List, Optional
 
-import chromadb
 import faiss
 from langchain.vectorstores import utils as chromautils
 from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_community.vectorstores import FAISS, Chroma
-from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
+from langchain_core.vectorstores import VectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import OpenAIEmbeddings
 from tqdm import tqdm
 
 from defaults import DEFAULT_EMBEDDERS_CONFIG, DEFAULT_VECTORSTORES_CONFIG
+from enhanced_document import EnhancedDocument
 from utils import get_files_from_dir, load_docs_from_jsonl
 
 
 class Embedder:
     ALLOWED_EMBEDDERS = {"HuggingFace", "OpenAI", "custom"}
-    ALLOWED_VECTORSTORES = {"FAISS", "Chroma", "custom"}
+    ALLOWED_VECTORSTORES = {None, "FAISS", "Chroma", "custom"}
 
     def __init__(
         self,
         documents_dir=None,
         embedder="HuggingFace",
         embedders_config: dict = DEFAULT_EMBEDDERS_CONFIG,
-        vectorstore="FAISS",
+        vectorstore: Optional[VectorStore] = "FAISS",
         vectorstore_config: dict = DEFAULT_VECTORSTORES_CONFIG,
     ) -> None:
+
+        self.documents_dir = documents_dir
         if embedder not in self.ALLOWED_EMBEDDERS:
             raise ValueError(
                 f"{embedder} is not a valid embedder."
@@ -44,21 +47,16 @@ class Embedder:
 
         self.embedder_name: str = embedder
         self.embedders_config = embedders_config
+        self.embedder = self.get_embedder(embedder)
 
         # NOTE(STP): Storing the vectorstore name since it's needed for a
         # workaround for the Chroma vectorstore. See the `self.embed_docs()`
         # method for more.
-        self.vectorstore_name: str = vectorstore
-        self.vectorstore_config = vectorstore_config
+        if vectorstore is not None:
+            self.vectorstore_name: str = vectorstore
+            self.vectorstore_config = vectorstore_config
 
-        self.embedder = self.get_embedder(embedder)
-        self.vectorstore_client = self.get_vectorstore(vectorstore)
-
-        self.documents_dir = documents_dir
-
-    def lazy_init_non_pickleable(self):
-        self.embedder = self.get_embedder(self.embedder_name)
-        self.vectorstore_client = self.get_vectorstore(self.vectorstore_name)
+            self.vectorstore_client = self.get_vectorstore(vectorstore)
 
     def embed_dataset(
         self,
@@ -72,7 +70,7 @@ class Embedder:
             num_files = len(list(get_files_from_dir(input_dir)))
 
         with tqdm(
-            total=num_files, desc="Embedding files", unit=" files"
+            total=num_files, desc="Embedding files", unit=" files", smoothing=0
         ) as pbar:
             while True:
                 file_chunk = list(
@@ -84,17 +82,6 @@ class Embedder:
                 self.embed_files(file_chunk)
                 pbar.update(len(file_chunk))
 
-            # input_files_iterator = get_files_from_dir(input_dir)
-            # for f in input_files_iterator:
-            #     self.embed_file(f)
-            #     pbar.update(1)
-            # with multiprocessing.Pool(num_workers) as pool:
-            #     for _ in pool.imap_unordered(
-            #         self.embed_file,
-            #         get_files_from_dir(input_dir),
-            #     ):
-            #         pbar.update(1)
-
     def embed_files(self, file_paths: List[str]) -> None:
         # TODO(STP): Explain why this takes in multiple files.
         logging.debug("Embedding files: %s", file_paths)
@@ -104,7 +91,7 @@ class Embedder:
         self.embed_docs(docs)
         logging.debug("Embedded files: %s", file_paths)
 
-    def embed_docs(self, docs: List[Document]) -> None:
+    def embed_docs(self, docs: List[EnhancedDocument]) -> None:
         # TODO(STP): We might want to batch embed documents here if the number
         # of documents exceed a certain threshold. Would need to look more into
         # if and when that would be useful.
@@ -118,7 +105,13 @@ class Embedder:
         # vectorstore_client = self.get_vectorstore(self.vectorstore_name)
         if self.vectorstore_name == "Chroma":
             docs = chromautils.filter_complex_metadata(docs)
-        self.vectorstore_client.add_documents(docs)
+
+        ids = [doc.document_hash for doc in docs]
+        if len(ids) != len(set(ids)):
+            docs = self.filter_duplicates(docs)
+            ids = [doc.document_hash for doc in docs]
+
+        self.vectorstore_client.add_documents(docs, ids=ids)
         logging.debug("Embedded %d docs", len(docs))
 
     def get_embedder(self, name: str) -> Embeddings:
@@ -156,3 +149,21 @@ class Embedder:
             config["docstore"] = InMemoryDocstore()
             config["index_to_docstore_id"] = {}
             return FAISS(**config)
+
+    def filter_duplicates(self, documents):
+        hash_freq = defaultdict(list)
+        for doc in documents:
+            hash_freq[doc.content_hash].append(doc)
+
+        result = []
+        for content_hash, docs in hash_freq.items():
+            if len(docs) > 1:
+                logging.debug(
+                    "Found multiple documents from %s with the same content "
+                    "hash. '%s...'",
+                    docs[0].metadata["source"],
+                    docs[0].page_content[:30],
+                )
+            result.append(docs[0])
+
+        return result

@@ -15,6 +15,7 @@ from langchain_core.documents import Document
 from tqdm import tqdm
 
 from defaults import DEFAULT_AUTOLOADER_CONFIG
+from enhanced_document import EnhancedDocument
 from utils import get_files_from_dir, save_docs_to_file, unzip_recursively
 
 
@@ -41,7 +42,7 @@ class Loader:
         """
 
         Takes in the location to a dataset and stores them as standardized
-        Document objects.
+        EnhancedDocument objects.
         """
         if save_docs and output_dir is None:
             raise ValueError(
@@ -67,7 +68,7 @@ class Loader:
         partial_func = partial(self.load_file, save_docs, output_dir)
 
         with tqdm(
-            total=num_files, desc="Loading files", unit=" files"
+            total=num_files, desc="Loading files", unit="files", smoothing=0
         ) as pbar:
             with multiprocessing.Pool(num_workers) as pool:
                 for i, _ in enumerate(
@@ -90,7 +91,7 @@ class Loader:
             save_docs_to_file(docs, file_path, output_dir)
         logging.debug("Loaded file: %s", file_path)
 
-    def file_to_docs(self, file_path: str) -> List[Document]:
+    def file_to_docs(self, file_path: str) -> List[EnhancedDocument]:
         # NOTE(STP): Switching to unstructured's file-type detection in the
         # future might be worthwhile (although their check for whether a file
         # is a JSON file is whether or not json.load() succeeds, which might
@@ -103,7 +104,6 @@ class Loader:
             try:
                 loader = JSONLoader(file_path, **kwargs)
                 docs = loader.load()
-                return docs
             except Exception as e:
                 logging.debug(
                     "Filepath %s failed to load using JSONLoader: %s\n "
@@ -111,7 +111,7 @@ class Loader:
                     file_path,
                     e,
                 )
-                return self.fallback_loader(file_path)
+                docs = self.fallback_loader(file_path)
 
         elif file_extension == "csv" and "CSVLoader" in self.autoloaders:
             config = self.autoloader_config["CSVLoader"]
@@ -119,7 +119,6 @@ class Loader:
             try:
                 loader = CSVLoader(file_path, **kwargs)
                 docs = loader.load()
-                return docs
 
             except Exception as e:
                 logging.debug(
@@ -128,11 +127,14 @@ class Loader:
                     file_path,
                     e,
                 )
-                return self.fallback_loader(file_path)
+                docs = self.fallback_loader(file_path)
 
         else:
             # Fallback to unstructured loader.
-            return self.fallback_loader(file_path)
+            docs = self.fallback_loader(file_path)
+
+        enhanced_docs = [EnhancedDocument.from_document(doc) for doc in docs]
+        return enhanced_docs
 
     def fallback_loader(self, file_path) -> List[Document]:
         logging.info("Using fallback loader for %s.", file_path)
@@ -175,21 +177,3 @@ class Loader:
                 autoloaders.add(autoloader)
 
         return autoloaders
-
-
-"""
-class CustomLoader:
-
-    def load_file(self, file_path):
-        # TODO(STP): Convert pseudocode.
-        file_extension = file_path.split(".")[-1]
-        if file_extension == "json":
-            with open(file_path) as fin:
-                data = json.load(fin)
-                text = data["text"]
-                del data["text"]
-                metadata = data
-                return Document(page_content=text, metadata=metadata)
-        else:
-            super().load_file(file_path)
-"""

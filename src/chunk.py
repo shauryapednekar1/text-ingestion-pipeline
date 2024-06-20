@@ -6,13 +6,12 @@ import os
 from functools import partial
 from typing import Callable, Dict, Iterable, List, Optional, Union
 
-import langchain_text_splitters.character
-from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.base import TextSplitter
 from tqdm import tqdm
 
 from defaults import DEFAULT_SPLITTERS_CONFIG
+from enhanced_document import EnhancedDocument
 from utils import get_files_from_dir, load_docs_from_jsonl, save_docs_to_file
 
 
@@ -58,7 +57,7 @@ class Chunker:
         partial_func = partial(self.chunk_file, save_chunks, output_dir)
 
         with tqdm(
-            total=num_files, desc="Chunking files", unit=" files"
+            total=num_files, desc="Chunking files", unit=" files", smoothing=0
         ) as pbar:
             with multiprocessing.Pool(num_workers) as pool:
                 for _ in pool.imap_unordered(
@@ -69,7 +68,7 @@ class Chunker:
 
     def chunk_file(
         self, save_chunks: bool, output_dir: str, file_path: str
-    ) -> List[Document]:
+    ) -> List[EnhancedDocument]:
         logging.debug("Chunking file: %s", file_path)
         raw_docs = load_docs_from_jsonl(file_path)
         chunked_docs = self.chunk_docs(raw_docs)
@@ -78,8 +77,15 @@ class Chunker:
         logging.debug("Chunked file: %s", file_path)
         return chunked_docs
 
-    def chunk_docs(self, raw_docs: List[Document]) -> List[Document]:
-        return self.splitter.split_documents(raw_docs)
+    def chunk_docs(
+        self, raw_docs: List[EnhancedDocument]
+    ) -> List[EnhancedDocument]:
+
+        chunked_docs = self.splitter.split_documents(raw_docs)
+        docs = [EnhancedDocument.remove_hashes(doc) for doc in chunked_docs]
+        docs = [EnhancedDocument.from_document(doc) for doc in docs]
+        s = set([doc.content_hash for doc in docs])
+        return docs
 
     def _get_splitter(self, splitter: str) -> TextSplitter:
         if splitter == "recursive":

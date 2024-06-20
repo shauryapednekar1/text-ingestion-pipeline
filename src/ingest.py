@@ -2,17 +2,17 @@ import logging
 import multiprocessing as mp
 import os
 import pickle
+from chunk import Chunker
 from functools import partial
 from itertools import chain, islice
 from multiprocessing import Pool
 from typing import List, Optional
 
-from langchain_core.documents import Document
 from tqdm import tqdm
 
-from doc_chunk import Chunker
-from doc_embed import Embedder
-from doc_load import Loader
+from embed import Embedder
+from enhanced_document import EnhancedDocument
+from load import Loader
 from utils import get_files_from_dir, save_docs_to_file, unzip_recursively
 
 # def quick_ingest():
@@ -52,10 +52,12 @@ class Ingester:
 
         num_files = None
         if detailed_progress:
-            num_files = max_files or len(list(get_files_from_dir(directory)))
+            num_files = (
+                max_files or 612484 or len(list(get_files_from_dir(directory)))
+            )
 
         with tqdm(
-            total=num_files, desc="Ingesting files", unit=" files"
+            total=num_files, desc="Ingesting files", unit="files", smoothing=0
         ) as pbar:
             batched_docs = []
             prev_counter = 0
@@ -91,7 +93,7 @@ class Ingester:
         save_docs: bool,
         output_dir: Optional[str],
         file_path: str,
-    ) -> List[Document]:
+    ) -> List[EnhancedDocument]:
         logging.debug("Loading and chunking: %s", file_path)
         raw_docs = self.loader.file_to_docs(file_path)
         chunked_docs = self.chunker.chunk_docs(raw_docs)

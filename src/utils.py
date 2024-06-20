@@ -7,6 +7,8 @@ from typing import List
 from langchain_core.documents import Document
 from smart_open import open
 
+from enhanced_document import EnhancedDocument
+
 
 def unzip_recursively(source_zip, target_dir, max_depth=100):
     # TODO(STP): Make this check cleaner.
@@ -50,7 +52,7 @@ def unzip_recursively(source_zip, target_dir, max_depth=100):
 
 
 def save_docs_to_file(
-    docs: List[Document],
+    docs: List[EnhancedDocument],
     original_file_path: str,
     output_dir: str,
 ):
@@ -67,9 +69,6 @@ def save_docs_to_file(
             f.write(doc.json() + "\n")
 
 
-# def get_batched_files_from_dir(root_dir:str):
-
-
 def get_files_from_dir(root_dir: str):
     """Generator function to iterate over file paths recursively."""
     for path in glob.iglob(os.path.join(root_dir, "**"), recursive=True):
@@ -77,11 +76,11 @@ def get_files_from_dir(root_dir: str):
             yield path
 
 
-def load_docs_from_jsonl(file_path) -> List[Document]:
+def load_docs_from_jsonl(file_path) -> List[EnhancedDocument]:
     res = []
     with open(file_path, "r") as jsonl_file:
         for line in jsonl_file:
             data = json.loads(line)
-            obj = Document(**data)
+            obj = EnhancedDocument(**data)
             res.append(obj)
     return res
