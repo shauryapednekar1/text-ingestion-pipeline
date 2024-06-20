@@ -79,5 +79,5 @@ This package doesn't leverage distributed computing/multiple GPUs efficiently ri
 ### Footnotes
 [^1]: More work can be done to allow this package to fully leverage multiple GPUs. See the *Future Work* section.
 [^2]: However, I have come to realize that the convencience provided by LangChain's wrappers are sometimes *not* worth the limitations it enforces :) .
-[^3]: The package doesn't use the name `Document` since LangChain has claimed that name. 
+[^3]: The package doesn't use the name `Document` since LangChain has claimed that name. Also, LangChain has a `_HashedDocument` class that offers similar functionality, but since its a private class, it isn't used by this package.
 [^4]: This currently fails due to limitations with Faiss' implementation. Fixing this either requires more custom logic for upserts, or switching to using LangChain's Indexing API. See Faiss' default configuration in `defaults.py` for more.

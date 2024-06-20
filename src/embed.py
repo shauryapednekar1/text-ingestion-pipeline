@@ -29,8 +29,12 @@ class Embedder:
     """Creating embeddings for documents. Optionally store to a vectorstore.
 
     Potential functions to override if implementing a custom Embedder class:
-    - `get_embedder()`: the logic for how a file is converted to an
-        EnhancedDocument.
+
+    - `set_embedder()`: the logic for how the embedder is initialized.
+    - `set_vectorstore()`: the logic for how the vectorstore is initialized.
+    - `embed_docs()`: the logic for how documents are embedded.
+    - `insert_embeddings()`: the logic for how embeddings are inserted into the
+        vectorstore.
     """
 
     ALLOWED_EMBEDDERS = {"HuggingFace", "OpenAI", "custom"}
@@ -76,7 +80,7 @@ class Embedder:
 
         self.embedder_name: str = embedder
         self.embedders_config = embedders_config
-        self.embedder = self.get_embedder(embedder)
+        self.set_embedder(embedder, config)
         if vectorstore is not None:
             self.set_vectorstore(vectorstore, vectorstore_config)
 
@@ -119,76 +123,6 @@ class Embedder:
                 self.embed_and_insert_files(file_chunk)
                 pbar.update(len(file_chunk))
 
-    def set_vectorstore(self, name: str, config: Dict):
-        """
-        Configures and initializes the vector store based on specified name and
-         configuration.
-
-        Args:
-            name (str): Name of the vector store to configure.
-            config (dict): Configuration dictionary for the vector store.
-
-        Raises:
-            NotImplementedError: If a 'custom' vector store is specified but
-                not implemented.
-            ValueError: If vector store name is not recognized or none provided
-                when required.
-        """
-        assert name is not None and name in self.ALLOWED_VECTORSTORES
-
-        if name == "custom":
-            error_message = """
-            "If using custom vectorstore, the Embedder.set_vectorstore() method
-            must be overridden.
-            """
-            raise NotImplementedError(error_message)
-
-        self.vectorstore_name = name
-        self.vectorstore_config = config
-        config = config[name]
-
-        if name == "FAISS":
-            if config["load_local"]:
-                load_local_config = config["load_local_args"]
-                load_local_config["embeddings"] = self.embedder
-                vectorstore_instance = FAISS.load_local(**load_local_config)
-                num_documents = len(vectorstore_instance.index_to_docstore_id)
-                print(f"Total number of documents: {num_documents}")
-
-            else:
-                config = config["init_args"]
-                config["embedding_function"] = self.embedder
-                config["index"] = faiss.IndexFlatL2(
-                    self.embedder.client.get_sentence_embedding_dimension()
-                )
-                config["docstore"] = InMemoryDocstore()
-                config["index_to_docstore_id"] = {}
-                vectorstore_instance = FAISS(**config)
-
-        self.vectorstore_instance = vectorstore_instance
-
-    def embed_files(
-        self, file_paths: List[str]
-    ) -> Tuple[EnhancedDocument, List[List[float]]]:
-        """
-        Embeds a batch of files specified by their paths.
-
-        Args:
-            file_paths (List[str]): List of file paths to embed.
-
-        Returns:
-            tuple: A tuple containing lists of ids, docs, and their embeddings.
-        """
-        # NOTE(STP): We allow passing multiple files to take advantage of
-        # batching benefits.
-        logging.debug("Embedding files: %s", file_paths)
-        docs = []
-        for file_path in file_paths:
-            docs.extend(load_docs_from_jsonl(file_path))
-        embeddings = self.embed_docs(docs)
-        logging.debug("Embedded files: %s", file_paths)
-        return docs, embeddings
-
     def embed_and_insert_files(
         self, file_paths: List[str]
     ) -> Tuple[List[str], List[EnhancedDocument], List[List[float]]]:
@@ -215,6 +149,28 @@ class Embedder:
         )
         return ids, docs, embeddings
 
+    def embed_files(
+        self, file_paths: List[str]
+    ) -> Tuple[EnhancedDocument, List[List[float]]]:
+        """
+        Embeds a batch of files specified by their paths.
+
+        Args:
+            file_paths (List[str]): List of file paths to embed.
+
+        Returns:
+            tuple: A tuple containing lists of ids, docs, and their embeddings.
+        """
+        # NOTE(STP): We allow passing multiple files to take advantage of
+        # batching benefits.
+        logging.debug("Embedding files: %s", file_paths)
+        docs = []
+        for file_path in file_paths:
+            docs.extend(load_docs_from_jsonl(file_path))
+        embeddings = self.embed_docs(docs)
+        logging.debug("Embedded files: %s", file_paths)
+        return docs, embeddings
+
     def embed_and_insert_docs(
         self, docs: List[EnhancedDocument]
     ) -> Tuple[List[str], List[EnhancedDocument], List[List[float]]]:
@@ -236,6 +192,28 @@ class Embedder:
         embeddings = self.embed_docs(docs)
         ids, docs, embeddings = self.insert_embeddings(docs, embeddings)
         return ids, docs, embeddings
+
+    def embed_docs(self, docs: List[EnhancedDocument]) -> List[List[float]]:
+        """
+        Generates embeddings for a list of documents.
+
+        Args:
+            docs (List[EnhancedDocument]): Documents to embed.
+
+        Returns:
+            List[List[float]]: List of embeddings for each document.
+        """
+        # NOTE(STP): This ignores metadata. If we want to include metadata in
+        # the embedding, we would need to combine it with the page content
+        # and stringify it in some manner.
+        # TODO(STP): We might want to batch embed documents here if the number
+        # of documents exceed a certain threshold. Would need to look more into
+        # if and when that would be useful.
+        logging.debug("Embedding %d docs", len(docs))
+        page_contents = [doc.page_content for doc in docs]
+        embeddings = self.embedder.embed_documents(page_contents)
+        logging.debug("Embedded %d docs", len(docs))
+        return embeddings
 
     def insert_embeddings(
         self, docs: List[EnhancedDocument], embeddings: List[List[float]]
@@ -307,56 +285,87 @@ class Embedder:
                     save_local_config["index_name"],
                 )
 
-    def embed_docs(self, docs: List[EnhancedDocument]) -> List[List[float]]:
+    def set_embedder(self, name: str, config: Dict) -> Embeddings:
         """
-        Generates embeddings for a list of documents.
+        Configures and initializes the embedder based on specified name and
+        configuration.
 
         Args:
-            docs (List[EnhancedDocument]): Documents to embed.
-
-        Returns:
-            List[List[float]]: List of embeddings for each document.
-        """
-        # NOTE(STP): This ignores metadata. If we want to include metadata in
-        # the embedding, we would need to combine it with the page content
-        # and stringify it in some manner.
-        # TODO(STP): We might want to batch embed documents here if the number
-        # of documents exceed a certain threshold. Would need to look more into
-        # if and when that would be useful.
-        logging.debug("Embedding %d docs", len(docs))
-        page_contents = [doc.page_content for doc in docs]
-        embeddings = self.embedder.embed_documents(page_contents)
-        logging.debug("Embedded %d docs", len(docs))
-        return embeddings
-
-    def get_embedder(self, name: str) -> Embeddings:
-        """
-        Retrieves an embedder instance based on the specified name.
-
-        Args:
-            name (str): Name of the embedder to retrieve.
-
-        Returns:
-            Embeddings: An instance of the requested embedder.
+            name (str): Name of the embedder to configure.
+            config (dict): Configuration dictionary for the embedder.
 
         Raises:
-            NotImplementedError: If 'custom' is specified but not implemented.
-            ValueError: If the specified embedder name is not recognized.
+            NotImplementedError: If a 'custom' embedder is specified but
+                not implemented.
+            ValueError: If embedder name is not recognized or none provided
+                when required.
         """
         if name == "custom":
             error_message = """
-            "If using custom embedder, the Embedder.get_embedder() method
+            "If using custom embedder, the Embedder.set_embedder() method
             must be overridden.
             """
             raise NotImplementedError(error_message)
 
-        embedder_config = self.embedders_config[name]
+        embedder_config = config[name]
         if name == "OpenAI":
             return OpenAIEmbeddings(**embedder_config)
         elif name == "HuggingFace":
             return HuggingFaceEmbeddings(**embedder_config)
         else:
             raise ValueError("Embedding not recognized: %s", name)
+
+    def set_vectorstore(self, name: str, config: Dict):
+        """
+        Configures and initializes the vector store based on specified name and
+        configuration.
+
+        Args:
+            name (str): Name of the vector store to configure.
+            config (dict): Configuration dictionary for the vector store.
+
+        Raises:
+            NotImplementedError: If a 'custom' vector store is specified but
+                not implemented.
+            ValueError: If vector store name is not recognized or none provided
+                when required.
+        """
+        assert name is not None and name in self.ALLOWED_VECTORSTORES
+
+        if name == "custom":
+            error_message = """
+            "If using custom vectorstore, the Embedder.set_vectorstore() method
+            must be overridden.
+            """
+            raise NotImplementedError(error_message)
+
+        self.vectorstore_name = name
+        self.vectorstore_config = config
+        config = config[name]
+
+        if name == "FAISS":
+            if config["load_local"]:
+                load_local_config = config["load_local_args"]
+                load_local_config["embeddings"] = self.embedder
+                vectorstore_instance = FAISS.load_local(**load_local_config)
+                num_documents = len(vectorstore_instance.index_to_docstore_id)
+                logging.debug(
+                    "Total number of documents loaded from saved FAISS "
+                    "vectorstore: %d",
+                    num_documents,
+                )
+
+            else:
+                config = config["init_args"]
+                config["embedding_function"] = self.embedder
+                config["index"] = faiss.IndexFlatL2(
+                    self.embedder.client.get_sentence_embedding_dimension()
+                )
+                config["docstore"] = InMemoryDocstore()
+                config["index_to_docstore_id"] = {}
+                vectorstore_instance = FAISS(**config)
+
+        self.vectorstore_instance = vectorstore_instance
 
     def _verify_vectorstore_client(self) -> None:
         """

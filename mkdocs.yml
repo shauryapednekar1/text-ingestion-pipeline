@@ -1,7 +1,15 @@
 site_name: Textual Dataset Ingestion Pipeline
 site_description: Documentation for the textual dataset ingestion pipeline
 theme:
+  # name: mkdocs
+  # name: readthedocs
   name: material
+  # features:
+  #   - content.footnote.tooltips
+
+markdown_extensions:
+  - footnotes:
+    SEPARATOR: ':'
 
 plugins:
   - search

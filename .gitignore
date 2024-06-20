@@ -3,6 +3,7 @@ data
 __pycache__
 foo**
 .DS_Store
+_*
 
 # temp
 unzipped_data
