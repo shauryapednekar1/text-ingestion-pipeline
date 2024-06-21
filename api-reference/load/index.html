@@ -55,21 +55,21 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Loader</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#src.load">load</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.load_text">load_text</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#src.load.Loader">Loader</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.load_text.Loader">Loader</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#src.load.Loader.__init__">__init__</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.load_text.Loader.__init__">__init__</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.load.Loader.fallback_loader">fallback_loader</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.load_text.Loader.fallback_loader">fallback_loader</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.load.Loader.file_to_docs">file_to_docs</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.load_text.Loader.file_to_docs">file_to_docs</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.load.Loader.load_dataset">load_dataset</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.load_text.Loader.load_dataset">load_dataset</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.load.Loader.load_file">load_file</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.load_text.Loader.load_file">load_file</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.load.Loader.unzip_dataset">unzip_dataset</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.load_text.Loader.unzip_dataset">unzip_dataset</a>
     </li>
         </ul>
     </li>
@@ -115,7 +115,7 @@
 
 
 
-<a id="src.load"></a>
+<a id="src.easy_ingest_text.load_text"></a>
     <div class="doc doc-contents first">
 
 
@@ -133,25 +133,26 @@
 
 
 
-<h2 id="src.load.Loader" class="doc doc-heading">
+<h2 id="src.easy_ingest_text.load_text.Loader" class="doc doc-heading">
             <code>Loader</code>
 
 
-<a href="#src.load.Loader" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#src.easy_ingest_text.load_text.Loader" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents ">
 
 
       <p>Load files into a standardized format.</p>
-<p>Potential functions to override if implementing a custom Loader class:
-- <code>file_to_docs()</code>: the logic for how a file is converted to an
-    EnhancedDocument.</p>
+<p>Potential functions to override if implementing a custom Loader class:</p>
+<ul>
+<li><code>file_to_docs()</code>: the logic for how a file is converted to an
+    EnhancedDocument.</li>
+</ul>
 
               <details class="quote">
-                <summary>Source code in <code>src/load.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 20</span>
-<span class="normal"> 21</span>
+                <summary>Source code in <code>src/easy_ingest_text/load_text.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 21</span>
 <span class="normal"> 22</span>
 <span class="normal"> 23</span>
 <span class="normal"> 24</span>
@@ -388,10 +389,26 @@
 <span class="normal">255</span>
 <span class="normal">256</span>
 <span class="normal">257</span>
-<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Loader</span><span class="p">:</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Loader</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load files into a standardized format.</span>
 
 <span class="sd">    Potential functions to override if implementing a custom Loader class:</span>
+
 <span class="sd">    - `file_to_docs()`: the logic for how a file is converted to an</span>
 <span class="sd">        EnhancedDocument.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -421,7 +438,7 @@
         <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">is_zipped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">unzip_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;unzipped&quot;</span><span class="p">,</span>
+        <span class="n">unzip_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">detailed_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">max_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -433,7 +450,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            input_dir (str): Path to the directory containing the dataset.</span>
 <span class="sd">            is_zipped (bool): Whether the dataset is in a zipped format.</span>
-<span class="sd">            unzip_dir (str): Directory to unzip files to, if applicable.</span>
+<span class="sd">            unzip_dir (Optional[str]): Directory to unzip files to if</span>
+<span class="sd">                applicable.</span>
 <span class="sd">            output_dir (str): Directory where processed documents should be</span>
 <span class="sd">                saved.</span>
 <span class="sd">            detailed_progress (bool): Whether to display detailed progress</span>
@@ -445,22 +463,14 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading dataset from </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">is_zipped</span><span class="p">:</span>
-            <span class="c1"># TODO(STP): Make this check cleaner.</span>
-            <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">input_dir</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">dataset_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.zip&quot;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Zipped dataset name must end in &#39;.zip&#39;. Received dataset &quot;</span>
-                    <span class="s2">&quot;name: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">dataset_name</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unzip_dir</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">)</span>
             <span class="n">directory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unzip_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">directory</span> <span class="o">=</span> <span class="n">input_dir</span>
 
         <span class="n">num_files</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">detailed_progress</span><span class="p">:</span>
-            <span class="n">num_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">get_files_from_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">)))</span>
+            <span class="n">total_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">get_files_from_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">)))</span>
+            <span class="n">num_files</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">total_files</span><span class="p">,</span> <span class="n">max_files</span><span class="p">)</span>
 
         <span class="n">partial_func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_file</span><span class="p">,</span> <span class="n">save_docs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span>
@@ -516,6 +526,7 @@
 <span class="sd">            List[EnhancedDocument]: A list of EnhancedDocument objects created</span>
 <span class="sd">                from the file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converting file to EnhancedDocuments.&quot;</span><span class="p">)</span>
         <span class="c1"># NOTE(STP): Switching to unstructured&#39;s file-type detection in the</span>
         <span class="c1"># future might be worthwhile (although their check for whether a file</span>
         <span class="c1"># is a JSON file is whether or not json.load() succeeds, which might</span>
@@ -556,14 +567,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Fallback to unstructured loader.</span>
             <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_loader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-
         <span class="n">enhanced_docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">EnhancedDocument</span><span class="o">.</span><span class="n">from_document</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converted file to EnhancedDocuments.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">enhanced_docs</span>
 
     <span class="k">def</span> <span class="nf">fallback_loader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Uses a generic loader to process files when specific loaders are not</span>
 <span class="sd">        applicable or fail.</span>
+
+<span class="sd">        First, we try to use the UnstructuredFileLoader, which is a somewhat</span>
+<span class="sd">        intelligent loader. However, if that fails, we fall back the the most</span>
+<span class="sd">        basic loader - the TextLoader.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            file_path (str): Path to the file being loaded.</span>
@@ -572,36 +587,51 @@
 <span class="sd">            List[Document]: A list of Document objects loaded using the</span>
 <span class="sd">                fallback method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using fallback loader for </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
-        <span class="n">loader</span> <span class="o">=</span> <span class="n">UnstructuredFileLoader</span><span class="p">(</span>
-            <span class="n">file_path</span><span class="p">,</span>
-            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;elements&quot;</span><span class="p">,</span>
-            <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;fast&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">docs</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using fallback loader for </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">loader</span> <span class="o">=</span> <span class="n">UnstructuredFileLoader</span><span class="p">(</span>
+                <span class="n">file_path</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;elements&quot;</span><span class="p">,</span>
+                <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;fast&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Failed to use UnstructuredFileLoader: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Falling back to basic TextLoader...&quot;</span><span class="p">)</span>
+            <span class="n">loader</span> <span class="o">=</span> <span class="n">TextLoader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">docs</span>
 
-    <span class="k">def</span> <span class="nf">unzip_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">unzip_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unzips a dataset from a specified input directory into a target unzip</span>
 <span class="sd">        directory.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            input_dir (str): Path to the zipped dataset.</span>
-<span class="sd">            unzip_dir (str): Target directory for the unzipped files.</span>
+<span class="sd">            unzip_dir (Optional[str]): Target directory for the unzipped files.</span>
+<span class="sd">                If not set, will unzip to current directory.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Path to the directory containing the unzipped files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">unzip_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">unzip_dir</span><span class="p">,</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">input_dir</span><span class="p">),</span>
-            <span class="c1"># TODO(STP): Maybe use a helper to remove file extension here.</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">input_dir</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span>
-        <span class="p">)</span>
-        <span class="n">unzip_recursively</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">directory</span>
+        <span class="c1"># TODO(STP): Make this check cleaner.</span>
+        <span class="k">if</span> <span class="n">input_dir</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;.zip&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Zipped dataset name must end in &#39;.zip&#39;, not </span><span class="si">%s</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Received dataset name: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">input_dir</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:],</span>
+                <span class="n">input_dir</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">input_dir</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">unzip_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">target_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unzip_dir</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target_directory</span> <span class="o">=</span> <span class="n">dataset_name</span>
+
+        <span class="n">target_directory</span> <span class="o">=</span> <span class="n">unzip_recursively</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">target_directory</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">target_directory</span>
 
     <span class="k">def</span> <span class="nf">_get_valid_autoloaders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the set of valid autoloaders.</span>
@@ -645,10 +675,10 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.load.Loader.__init__" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.load_text.Loader.__init__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">autoloader_config</span><span class="o">=</span><span class="n">DEFAULT_AUTOLOADER_CONFIG</span><span class="p">)</span></code>
 
-<a href="#src.load.Loader.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.load_text.Loader.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -669,7 +699,7 @@
             <li>
               <b><code>autoloader_config</code></b>
                   (<code>dict</code>, default:
-                      <code><span title="defaults.DEFAULT_AUTOLOADER_CONFIG">DEFAULT_AUTOLOADER_CONFIG</span></code>
+                      <code><span title="src.easy_ingest_text.defaults.DEFAULT_AUTOLOADER_CONFIG">DEFAULT_AUTOLOADER_CONFIG</span></code>
 )
               –
               <div class="doc-md-description">
@@ -717,10 +747,8 @@ configuration.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/load.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
+              <summary>Source code in <code>src/easy_ingest_text/load_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
@@ -736,7 +764,9 @@ configuration.</p>
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
-<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">autoloader_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">DEFAULT_AUTOLOADER_CONFIG</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -764,16 +794,19 @@ configuration.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.load.Loader.fallback_loader" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.load_text.Loader.fallback_loader" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">fallback_loader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></code>
 
-<a href="#src.load.Loader.fallback_loader" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.load_text.Loader.fallback_loader" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
 
       <p>Uses a generic loader to process files when specific loaders are not
 applicable or fail.</p>
+<p>First, we try to use the UnstructuredFileLoader, which is a somewhat
+intelligent loader. However, if that fails, we fall back the the most
+basic loader - the TextLoader.</p>
 
 
 <table class="field-list">
@@ -824,8 +857,12 @@ fallback method.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/load.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
+              <summary>Source code in <code>src/easy_ingest_text/load_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
@@ -844,10 +881,21 @@ fallback method.</p>
 <span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
-<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fallback_loader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fallback_loader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses a generic loader to process files when specific loaders are not</span>
 <span class="sd">    applicable or fail.</span>
+
+<span class="sd">    First, we try to use the UnstructuredFileLoader, which is a somewhat</span>
+<span class="sd">    intelligent loader. However, if that fails, we fall back the the most</span>
+<span class="sd">    basic loader - the TextLoader.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (str): Path to the file being loaded.</span>
@@ -856,13 +904,20 @@ fallback method.</p>
 <span class="sd">        List[Document]: A list of Document objects loaded using the</span>
 <span class="sd">            fallback method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using fallback loader for </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
-    <span class="n">loader</span> <span class="o">=</span> <span class="n">UnstructuredFileLoader</span><span class="p">(</span>
-        <span class="n">file_path</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;elements&quot;</span><span class="p">,</span>
-        <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;fast&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using fallback loader for </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">UnstructuredFileLoader</span><span class="p">(</span>
+            <span class="n">file_path</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;elements&quot;</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;fast&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Failed to use UnstructuredFileLoader: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Falling back to basic TextLoader...&quot;</span><span class="p">)</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">TextLoader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
     <span class="k">return</span> <span class="n">docs</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -873,10 +928,10 @@ fallback method.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.load.Loader.file_to_docs" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.load_text.Loader.file_to_docs" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">file_to_docs</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></code>
 
-<a href="#src.load.Loader.file_to_docs" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.load_text.Loader.file_to_docs" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -920,7 +975,7 @@ file extension and configured autoloaders.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-                  <code><span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>]</code>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>]</code>
               –
               <div class="doc-md-description">
                 <p>List[EnhancedDocument]: A list of EnhancedDocument objects created
@@ -933,8 +988,13 @@ from the file.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/load.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">136</span>
+              <summary>Source code in <code>src/easy_ingest_text/load_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span>
@@ -984,11 +1044,7 @@ from the file.</p>
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">file_to_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EnhancedDocument</span><span class="p">]:</span>
+<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">file_to_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EnhancedDocument</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Processes a file into a list of EnhancedDocument objects based on the</span>
 <span class="sd">    file extension and configured autoloaders.</span>
@@ -1000,6 +1056,7 @@ from the file.</p>
 <span class="sd">        List[EnhancedDocument]: A list of EnhancedDocument objects created</span>
 <span class="sd">            from the file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converting file to EnhancedDocuments.&quot;</span><span class="p">)</span>
     <span class="c1"># NOTE(STP): Switching to unstructured&#39;s file-type detection in the</span>
     <span class="c1"># future might be worthwhile (although their check for whether a file</span>
     <span class="c1"># is a JSON file is whether or not json.load() succeeds, which might</span>
@@ -1040,8 +1097,8 @@ from the file.</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Fallback to unstructured loader.</span>
         <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_loader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-
     <span class="n">enhanced_docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">EnhancedDocument</span><span class="o">.</span><span class="n">from_document</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converted file to EnhancedDocuments.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">enhanced_docs</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1052,10 +1109,10 @@ from the file.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.load.Loader.load_dataset" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">load_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">is_zipped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="o">=</span><span class="s1">&#39;unzipped&#39;</span><span class="p">,</span> <span class="n">detailed_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_files</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h3 id="src.easy_ingest_text.load_text.Loader.load_dataset" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">load_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">is_zipped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_files</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
-<a href="#src.load.Loader.load_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.load_text.Loader.load_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1094,12 +1151,13 @@ EnhancedDocument objects, and saves them to disk.</p>
             </li>
             <li>
               <b><code>unzip_dir</code></b>
-                  (<code>str</code>, default:
-                      <code>&#39;unzipped&#39;</code>
+                  (<code><span title="typing.Optional">Optional</span>[str]</code>, default:
+                      <code>None</code>
 )
               –
               <div class="doc-md-description">
-                <p>Directory to unzip files to, if applicable.</p>
+                <p>Directory to unzip files to if
+applicable.</p>
               </div>
             </li>
             <li>
@@ -1149,10 +1207,8 @@ files.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/load.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
+              <summary>Source code in <code>src/easy_ingest_text/load_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 50</span>
 <span class="normal"> 51</span>
 <span class="normal"> 52</span>
 <span class="normal"> 53</span>
@@ -1207,17 +1263,12 @@ files.</p>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">is_zipped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">unzip_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;unzipped&quot;</span><span class="p">,</span>
+    <span class="n">unzip_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">detailed_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="n">max_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1229,7 +1280,8 @@ files.</p>
 <span class="sd">    Args:</span>
 <span class="sd">        input_dir (str): Path to the directory containing the dataset.</span>
 <span class="sd">        is_zipped (bool): Whether the dataset is in a zipped format.</span>
-<span class="sd">        unzip_dir (str): Directory to unzip files to, if applicable.</span>
+<span class="sd">        unzip_dir (Optional[str]): Directory to unzip files to if</span>
+<span class="sd">            applicable.</span>
 <span class="sd">        output_dir (str): Directory where processed documents should be</span>
 <span class="sd">            saved.</span>
 <span class="sd">        detailed_progress (bool): Whether to display detailed progress</span>
@@ -1241,22 +1293,14 @@ files.</p>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading dataset from </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">is_zipped</span><span class="p">:</span>
-        <span class="c1"># TODO(STP): Make this check cleaner.</span>
-        <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">input_dir</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">dataset_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.zip&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Zipped dataset name must end in &#39;.zip&#39;. Received dataset &quot;</span>
-                <span class="s2">&quot;name: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="n">dataset_name</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unzip_dir</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">)</span>
         <span class="n">directory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unzip_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">directory</span> <span class="o">=</span> <span class="n">input_dir</span>
 
     <span class="n">num_files</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">detailed_progress</span><span class="p">:</span>
-        <span class="n">num_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">get_files_from_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">)))</span>
+        <span class="n">total_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">get_files_from_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">)))</span>
+        <span class="n">num_files</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">total_files</span><span class="p">,</span> <span class="n">max_files</span><span class="p">)</span>
 
     <span class="n">partial_func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_file</span><span class="p">,</span> <span class="n">save_docs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span>
@@ -1284,10 +1328,10 @@ files.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.load.Loader.load_file" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.load_text.Loader.load_file" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">load_file</span><span class="p">(</span><span class="n">save_docs</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span></code>
 
-<a href="#src.load.Loader.load_file" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.load_text.Loader.load_file" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1360,8 +1404,13 @@ should be saved.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/load.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+              <summary>Source code in <code>src/easy_ingest_text/load_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -1378,12 +1427,7 @@ should be saved.</p>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span>
+<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">save_docs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EnhancedDocument</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1415,10 +1459,10 @@ should be saved.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.load.Loader.unzip_dataset" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.load_text.Loader.unzip_dataset" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">unzip_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">)</span></code>
 
-<a href="#src.load.Loader.unzip_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.load_text.Loader.unzip_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1447,10 +1491,11 @@ directory.</p>
             </li>
             <li>
               <b><code>unzip_dir</code></b>
-                  (<code>str</code>)
+                  (<code><span title="typing.Optional">Optional</span>[str]</code>)
               –
               <div class="doc-md-description">
-                <p>Target directory for the unzipped files.</p>
+                <p>Target directory for the unzipped files.
+If not set, will unzip to current directory.</p>
               </div>
             </li>
         </ul>
@@ -1482,15 +1527,8 @@ directory.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/load.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
+              <summary>Source code in <code>src/easy_ingest_text/load_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
@@ -1503,27 +1541,50 @@ directory.</p>
 <span class="normal">230</span>
 <span class="normal">231</span>
 <span class="normal">232</span>
-<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unzip_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">unzip_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unzips a dataset from a specified input directory into a target unzip</span>
 <span class="sd">    directory.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        input_dir (str): Path to the zipped dataset.</span>
-<span class="sd">        unzip_dir (str): Target directory for the unzipped files.</span>
+<span class="sd">        unzip_dir (Optional[str]): Target directory for the unzipped files.</span>
+<span class="sd">            If not set, will unzip to current directory.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Path to the directory containing the unzipped files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">unzip_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="n">unzip_dir</span><span class="p">,</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">input_dir</span><span class="p">),</span>
-        <span class="c1"># TODO(STP): Maybe use a helper to remove file extension here.</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">input_dir</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span>
-    <span class="p">)</span>
-    <span class="n">unzip_recursively</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">directory</span>
+    <span class="c1"># TODO(STP): Make this check cleaner.</span>
+    <span class="k">if</span> <span class="n">input_dir</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;.zip&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Zipped dataset name must end in &#39;.zip&#39;, not </span><span class="si">%s</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;Received dataset name: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">input_dir</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:],</span>
+            <span class="n">input_dir</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">input_dir</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">unzip_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">target_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unzip_dir</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">target_directory</span> <span class="o">=</span> <span class="n">dataset_name</span>
+
+    <span class="n">target_directory</span> <span class="o">=</span> <span class="n">unzip_recursively</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">target_directory</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">target_directory</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

@@ -61,15 +61,15 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Ingester</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#src.ingest">ingest</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.ingest_text">ingest_text</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#src.ingest.Ingester">Ingester</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.ingest_text.Ingester">Ingester</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#src.ingest.Ingester.__init__">__init__</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.ingest_text.Ingester.__init__">__init__</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.ingest.Ingester.ingest_dataset">ingest_dataset</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.ingest_text.Ingester.ingest_dataset">ingest_dataset</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.ingest.Ingester.load_and_chunk_file">load_and_chunk_file</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.ingest_text.Ingester.load_and_chunk_file">load_and_chunk_file</a>
     </li>
         </ul>
     </li>
@@ -109,7 +109,7 @@
 
 
 
-<a id="src.ingest"></a>
+<a id="src.easy_ingest_text.ingest_text"></a>
     <div class="doc doc-contents first">
 
 
@@ -127,11 +127,11 @@
 
 
 
-<h2 id="src.ingest.Ingester" class="doc doc-heading">
+<h2 id="src.easy_ingest_text.ingest_text.Ingester" class="doc doc-heading">
             <code>Ingester</code>
 
 
-<a href="#src.ingest.Ingester" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#src.easy_ingest_text.ingest_text.Ingester" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents ">
@@ -140,7 +140,7 @@
       <p>Ingest files into a vectorstore.</p>
 
               <details class="quote">
-                <summary>Source code in <code>src/ingest.py</code></summary>
+                <summary>Source code in <code>src/easy_ingest_text/ingest_text.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 19</span>
 <span class="normal"> 20</span>
 <span class="normal"> 21</span>
@@ -269,7 +269,9 @@
 <span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
-<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Ingester</span><span class="p">:</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Ingester</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ingest files into a vectorstore.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -297,7 +299,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">is_zipped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">unzip_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;unzipped&quot;</span><span class="p">,</span>
+        <span class="n">unzip_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">save_intermediate_docs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
@@ -312,7 +314,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            input_dir (str): Directory containing the documents.</span>
 <span class="sd">            is_zipped (bool): Whether the input directory is zipped.</span>
-<span class="sd">            unzip_dir (str): Directory to unzip files if zipped.</span>
+<span class="sd">            unzip_dir (Optional[str]): Directory to unzip files if zipped.</span>
 <span class="sd">            save_intermediate_docs (bool): Whether to save the loaded and</span>
 <span class="sd">                chunked documents to disk.</span>
 <span class="sd">            output_dir (Optional[str]): Directory where processed documents are</span>
@@ -329,9 +331,8 @@
 
         <span class="n">num_files</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">detailed_progress</span><span class="p">:</span>
-            <span class="n">num_files</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">max_files</span> <span class="ow">or</span> <span class="mi">612484</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">get_files_from_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">)))</span>
-            <span class="p">)</span>
+            <span class="n">total_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">get_files_from_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">)))</span>
+            <span class="n">num_files</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">total_files</span><span class="p">,</span> <span class="n">max_files</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
             <span class="n">total</span><span class="o">=</span><span class="n">num_files</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Ingesting files&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mi">0</span>
@@ -359,6 +360,9 @@
 
             <span class="k">if</span> <span class="n">batched_docs</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span><span class="n">batched_docs</span><span class="p">)</span>
+
+            <span class="c1"># NOTE(STP): Save the vectorstore to disk if applicable.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">save_vectorstore_if_applicable</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">load_and_chunk_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -416,10 +420,10 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.ingest.Ingester.__init__" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.ingest_text.Ingester.__init__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">Loader</span><span class="p">(),</span> <span class="n">chunker</span><span class="o">=</span><span class="n">Chunker</span><span class="p">(),</span> <span class="n">embedder</span><span class="o">=</span><span class="n">Embedder</span><span class="p">())</span></code>
 
-<a href="#src.ingest.Ingester.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.ingest_text.Ingester.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -440,8 +444,8 @@ and embedding documents.</p>
         <ul class="first simple">
             <li>
               <b><code>loader</code></b>
-                  (<code><span title="load.Loader">Loader</span></code>, default:
-                      <code><span title="load.Loader">Loader</span>()</code>
+                  (<code><a class="autorefs autorefs-internal" title="src.easy_ingest_text.load_text.Loader" href="../load/#src.easy_ingest_text.load_text.Loader">Loader</a></code>, default:
+                      <code><a class="autorefs autorefs-internal" title="src.easy_ingest_text.load_text.Loader" href="../load/#src.easy_ingest_text.load_text.Loader">Loader</a>()</code>
 )
               –
               <div class="doc-md-description">
@@ -450,8 +454,8 @@ and embedding documents.</p>
             </li>
             <li>
               <b><code>chunker</code></b>
-                  (<code><span title="chunk.Chunker">Chunker</span></code>, default:
-                      <code><span title="chunk.Chunker">Chunker</span>()</code>
+                  (<code><a class="autorefs autorefs-internal" title="src.easy_ingest_text.chunk_text.Chunker" href="../chunk/#src.easy_ingest_text.chunk_text.Chunker">Chunker</a></code>, default:
+                      <code><a class="autorefs autorefs-internal" title="src.easy_ingest_text.chunk_text.Chunker" href="../chunk/#src.easy_ingest_text.chunk_text.Chunker">Chunker</a>()</code>
 )
               –
               <div class="doc-md-description">
@@ -461,8 +465,8 @@ chunking.</p>
             </li>
             <li>
               <b><code>embedder</code></b>
-                  (<code><span title="embed.Embedder">Embedder</span></code>, default:
-                      <code><span title="embed.Embedder">Embedder</span>()</code>
+                  (<code><a class="autorefs autorefs-internal" title="src.easy_ingest_text.embed_text.Embedder" href="../embedder/#src.easy_ingest_text.embed_text.Embedder">Embedder</a></code>, default:
+                      <code><a class="autorefs autorefs-internal" title="src.easy_ingest_text.embed_text.Embedder" href="../embedder/#src.easy_ingest_text.embed_text.Embedder">Embedder</a>()</code>
 )
               –
               <div class="doc-md-description">
@@ -476,7 +480,7 @@ embedding.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/ingest.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/ingest_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
@@ -525,10 +529,10 @@ embedding.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.ingest.Ingester.ingest_dataset" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">ingest_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">is_zipped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="o">=</span><span class="s1">&#39;unzipped&#39;</span><span class="p">,</span> <span class="n">save_intermediate_docs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></code>
+<h3 id="src.easy_ingest_text.ingest_text.Ingester.ingest_dataset" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ingest_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">is_zipped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_intermediate_docs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></code>
 
-<a href="#src.ingest.Ingester.ingest_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.ingest_text.Ingester.ingest_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -567,8 +571,8 @@ embedding.</p>
             </li>
             <li>
               <b><code>unzip_dir</code></b>
-                  (<code>str</code>, default:
-                      <code>&#39;unzipped&#39;</code>
+                  (<code><span title="typing.Optional">Optional</span>[str]</code>, default:
+                      <code>None</code>
 )
               –
               <div class="doc-md-description">
@@ -643,7 +647,7 @@ saved.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/ingest.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/ingest_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 43</span>
 <span class="normal"> 44</span>
 <span class="normal"> 45</span>
@@ -709,11 +713,13 @@ saved.</p>
 <span class="normal">105</span>
 <span class="normal">106</span>
 <span class="normal">107</span>
-<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">ingest_dataset</span><span class="p">(</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">ingest_dataset</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">is_zipped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">unzip_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;unzipped&quot;</span><span class="p">,</span>
+    <span class="n">unzip_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">save_intermediate_docs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">output_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
@@ -728,7 +734,7 @@ saved.</p>
 <span class="sd">    Args:</span>
 <span class="sd">        input_dir (str): Directory containing the documents.</span>
 <span class="sd">        is_zipped (bool): Whether the input directory is zipped.</span>
-<span class="sd">        unzip_dir (str): Directory to unzip files if zipped.</span>
+<span class="sd">        unzip_dir (Optional[str]): Directory to unzip files if zipped.</span>
 <span class="sd">        save_intermediate_docs (bool): Whether to save the loaded and</span>
 <span class="sd">            chunked documents to disk.</span>
 <span class="sd">        output_dir (Optional[str]): Directory where processed documents are</span>
@@ -745,9 +751,8 @@ saved.</p>
 
     <span class="n">num_files</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">detailed_progress</span><span class="p">:</span>
-        <span class="n">num_files</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">max_files</span> <span class="ow">or</span> <span class="mi">612484</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">get_files_from_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">)))</span>
-        <span class="p">)</span>
+        <span class="n">total_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">get_files_from_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">)))</span>
+        <span class="n">num_files</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">total_files</span><span class="p">,</span> <span class="n">max_files</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
         <span class="n">total</span><span class="o">=</span><span class="n">num_files</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Ingesting files&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mi">0</span>
@@ -775,6 +780,9 @@ saved.</p>
 
         <span class="k">if</span> <span class="n">batched_docs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span><span class="n">batched_docs</span><span class="p">)</span>
+
+        <span class="c1"># NOTE(STP): Save the vectorstore to disk if applicable.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">save_vectorstore_if_applicable</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -784,10 +792,10 @@ saved.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.ingest.Ingester.load_and_chunk_file" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.ingest_text.Ingester.load_and_chunk_file" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">load_and_chunk_file</span><span class="p">(</span><span class="n">save_intermediate_docs</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span></code>
 
-<a href="#src.ingest.Ingester.load_and_chunk_file" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.ingest_text.Ingester.load_and_chunk_file" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -849,7 +857,7 @@ processing.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-                  <code><span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>]</code>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>]</code>
               –
               <div class="doc-md-description">
                 <p>List[EnhancedDocument]: A list of chunked EnhancedDocument objects.</p>
@@ -885,10 +893,8 @@ provided.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/ingest.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
+              <summary>Source code in <code>src/easy_ingest_text/ingest_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -923,7 +929,9 @@ provided.</p>
 <span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
-<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_and_chunk_file</span><span class="p">(</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_and_chunk_file</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">save_intermediate_docs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="n">output_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>

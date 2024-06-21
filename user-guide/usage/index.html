@@ -54,6 +54,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#using-custom-classes">Using Custom Classes</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#saving-the-vectorstore-to-disk">Saving the vectorstore to disk</a>
+    </li>
     </ul>
                   </li>
               </ul>
@@ -95,21 +97,28 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="usage-guide">Usage Guide<a class="headerlink" href="#usage-guide" title="Permanent link">&para;</a></h1>
-<p>See the home page for more info on how the design is packaged.</p>
+<p>An example script can be found at <code>/scripts/example_ingestion.py</code>.
+Note: Currently, this package isn't tested when passing relative paths as input. 
+Thus, it's advised to store the dataset in the same directory as the script to
+prevent undesired behavior.</p>
+<hr />
+<p>See the <a href="https://github.com/shauryapednekar1/text-ingestion-pipeline/tree/user/shaurya/add-load-framework">README</a> for more info on how the design is packaged.</p>
+<hr />
 <h3 id="loading-a-textual-dataset-into-a-vectorstore">Loading a textual dataset into a vectorstore<a class="headerlink" href="#loading-a-textual-dataset-into-a-vectorstore" title="Permanent link">&para;</a></h3>
 <p>This is the quickest way to ingest a dataset and store the results in a vectorstore. 
 It uses a default loading, chunking, and embedding strategy.
 This can be done in the following manner:</p>
-<pre><code class="language-python">import ...
+<pre><code class="language-python">from easy_ingest_text.ingest_text import Ingester
 
 ingester = Ingester()
 ingester.ingest_dataset(
-    input_dir=&quot;financial_dataset&quot;,
+    input_dir=&quot;financial_dataset.zip&quot;,
+    is_zipped=True,
     save_intermediate_docs=True,
     output_dir=&quot;test_output&quot;,
     detailed_progress=True,
     batch_size=100,
-    max_files=1000,
+    max_files=500,
 )
 </code></pre>
 <p>If you want to specify different configuration options for the default <code>Loader</code>,
@@ -143,7 +152,10 @@ or embed documents, you can subclass the relevant class and pass it to the
 overriden.</p>
 <p>Here's an example where a custom loader for loading json documents
 of a specific format. </p>
-<pre><code class="language-python">class CustomLoader(Loader):
+<pre><code class="language-python">from easy_ingest_text.load_text import Loader
+from easy_ingest_text.enhanced_document import EnhancedDocument
+
+class CustomLoader(Loader):
     def file_to_docs(self, file_path: str) -&gt; List[EnhancedDocument]:
         file_extension = file_path.split(&quot;.&quot;)[-1]
         if file_extension == &quot;json&quot;:
@@ -175,6 +187,29 @@ of a specific format. </p>
                     return []
         else:
             return super().file_to_docs(file_path)
+</code></pre>
+<h3 id="saving-the-vectorstore-to-disk">Saving the vectorstore to disk<a class="headerlink" href="#saving-the-vectorstore-to-disk" title="Permanent link">&para;</a></h3>
+<p>If using a custom vectorstore, it might offer its own functionality to persist
+to disk. If using the default FAISS vectorstore, you can save it to disk by
+setting the <code>save_local</code> flag in its config to <code>True</code>, as shown in the example
+below.</p>
+<pre><code class="language-python">from easy_ingest_text.ingest_text import Ingester
+from easy_ingest_text.embed_text import Embedder
+import easy_ingest_text.defaults
+
+
+vectorstore_config = defaults.DEFAULT_VECTORSTORES_CONFIG
+vectorstore_config[&quot;FAISS&quot;][&quot;save_local_config&quot;][&quot;save_local&quot;] = True
+embedder = Embedder(vectorstore_config=vectorstore_config)
+ingester = Ingester(embedder=embedder)
+ingester.ingest_dataset(
+    input_dir=&quot;financial_dataset&quot;,
+    save_intermediate_docs=True,
+    output_dir=&quot;test_output&quot;,
+    detailed_progress=True,
+    batch_size=100,
+    max_files=1000,
+)
 </code></pre>
               
             </div>

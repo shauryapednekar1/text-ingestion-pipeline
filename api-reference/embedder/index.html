@@ -59,29 +59,29 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Embedder</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#src.embed">embed</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.embed_text">embed_text</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#src.embed.Embedder">Embedder</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder">Embedder</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.__init__">__init__</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.__init__">__init__</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.embed_and_insert_dataset">embed_and_insert_dataset</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.embed_and_insert_dataset">embed_and_insert_dataset</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.embed_and_insert_docs">embed_and_insert_docs</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.embed_and_insert_docs">embed_and_insert_docs</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.embed_and_insert_files">embed_and_insert_files</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.embed_and_insert_files">embed_and_insert_files</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.embed_docs">embed_docs</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.embed_docs">embed_docs</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.embed_files">embed_files</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.embed_files">embed_files</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.insert_embeddings">insert_embeddings</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.insert_embeddings">insert_embeddings</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.save_vectorstore">save_vectorstore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.save_vectorstore_if_applicable">save_vectorstore_if_applicable</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.set_embedder">set_embedder</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.set_embedder">set_embedder</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.embed.Embedder.set_vectorstore">set_vectorstore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.embed_text.Embedder.set_vectorstore">set_vectorstore</a>
     </li>
         </ul>
     </li>
@@ -123,7 +123,7 @@
 
 
 
-<a id="src.embed"></a>
+<a id="src.easy_ingest_text.embed_text"></a>
     <div class="doc doc-contents first">
 
 
@@ -141,11 +141,11 @@
 
 
 
-<h2 id="src.embed.Embedder" class="doc doc-heading">
+<h2 id="src.easy_ingest_text.embed_text.Embedder" class="doc doc-heading">
             <code>Embedder</code>
 
 
-<a href="#src.embed.Embedder" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#src.easy_ingest_text.embed_text.Embedder" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents ">
@@ -162,7 +162,7 @@
 </ul>
 
               <details class="quote">
-                <summary>Source code in <code>src/embed.py</code></summary>
+                <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 28</span>
 <span class="normal"> 29</span>
 <span class="normal"> 30</span>
@@ -515,7 +515,22 @@
 <span class="normal">377</span>
 <span class="normal">378</span>
 <span class="normal">379</span>
-<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Embedder</span><span class="p">:</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Embedder</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creating embeddings for documents. Optionally store to a vectorstore.</span>
 
 <span class="sd">    Potential functions to override if implementing a custom Embedder class:</span>
@@ -570,7 +585,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">embedder_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">embedder</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedders_config</span> <span class="o">=</span> <span class="n">embedders_config</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_embedder</span><span class="p">(</span><span class="n">embedder</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_embedder</span><span class="p">(</span><span class="n">embedder</span><span class="p">,</span> <span class="n">embedders_config</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">vectorstore</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_vectorstore</span><span class="p">(</span><span class="n">vectorstore</span><span class="p">,</span> <span class="n">vectorstore_config</span><span class="p">)</span>
 
@@ -625,7 +640,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple: A tuple containing lists of ids, docs, and their embeddings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_client</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_instance</span><span class="p">()</span>
         <span class="n">all_docs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">all_embeddings</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
@@ -678,7 +693,7 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the vectorstore instance is not set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_client</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_instance</span><span class="p">()</span>
         <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed_docs</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
         <span class="n">ids</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_embeddings</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ids</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">embeddings</span>
@@ -725,7 +740,7 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the vectorstore instance is not set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_client</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_instance</span><span class="p">()</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Saving </span><span class="si">%d</span><span class="s2"> embedded docs to vectorstore docs&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
         <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">document_hash</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)):</span>
@@ -761,18 +776,27 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Saved </span><span class="si">%d</span><span class="s2"> embedded docs to vectorstore docs&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">ids</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">embeddings</span>
 
-    <span class="k">def</span> <span class="nf">save_vectorstore</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">save_vectorstore_if_applicable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Saves the current state of the vector store locally.</span>
+<span class="sd">        Saves the current state of the vector store locally if specified by the</span>
+<span class="sd">        config.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_name</span> <span class="o">==</span> <span class="s2">&quot;FAISS&quot;</span><span class="p">:</span>
             <span class="n">save_local_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_config</span><span class="p">[</span><span class="s2">&quot;FAISS&quot;</span><span class="p">][</span>
                 <span class="s2">&quot;save_local_config&quot;</span>
             <span class="p">]</span>
             <span class="k">if</span> <span class="n">save_local_config</span><span class="p">[</span><span class="s2">&quot;save_local&quot;</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_client</span><span class="o">.</span><span class="n">save_local</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_instance</span><span class="o">.</span><span class="n">save_local</span><span class="p">(</span>
                     <span class="n">save_local_config</span><span class="p">[</span><span class="s2">&quot;folder_path&quot;</span><span class="p">],</span>
                     <span class="n">save_local_config</span><span class="p">[</span><span class="s2">&quot;index_name&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">num_records</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_instance</span><span class="o">.</span><span class="n">index_to_docstore_id</span>
+                <span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Successfully saved vectorstore of length </span><span class="si">%d</span><span class="s2"> to: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">num_records</span><span class="p">,</span>
+                    <span class="n">save_local_config</span><span class="p">[</span><span class="s2">&quot;folder_path&quot;</span><span class="p">],</span>
                 <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">set_embedder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Embeddings</span><span class="p">:</span>
@@ -789,6 +813,7 @@
 <span class="sd">                not implemented.</span>
 <span class="sd">            ValueError: If embedder name is not recognized or none provided</span>
 <span class="sd">                when required.</span>
+<span class="sd">            ValueError: If embedder instance is set to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;custom&quot;</span><span class="p">:</span>
             <span class="n">error_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -798,12 +823,17 @@
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 
         <span class="n">embedder_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">embedder_instance</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;OpenAI&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">OpenAIEmbeddings</span><span class="p">(</span><span class="o">**</span><span class="n">embedder_config</span><span class="p">)</span>
+            <span class="n">embedder_instance</span> <span class="o">=</span> <span class="n">OpenAIEmbeddings</span><span class="p">(</span><span class="o">**</span><span class="n">embedder_config</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;HuggingFace&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">HuggingFaceEmbeddings</span><span class="p">(</span><span class="o">**</span><span class="n">embedder_config</span><span class="p">)</span>
+            <span class="n">embedder_instance</span> <span class="o">=</span> <span class="n">HuggingFaceEmbeddings</span><span class="p">(</span><span class="o">**</span><span class="n">embedder_config</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Embedding not recognized: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">embedder_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Embedder instance cannot be set to None.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span> <span class="o">=</span> <span class="n">embedder_instance</span>
 
     <span class="k">def</span> <span class="nf">set_vectorstore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -857,7 +887,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_instance</span> <span class="o">=</span> <span class="n">vectorstore_instance</span>
 
-    <span class="k">def</span> <span class="nf">_verify_vectorstore_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_verify_vectorstore_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verifies that the vectorstore instance is properly set up.</span>
 
@@ -886,10 +916,10 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.__init__" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.embed_text.Embedder.__init__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">documents_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">embedder</span><span class="o">=</span><span class="s1">&#39;HuggingFace&#39;</span><span class="p">,</span> <span class="n">embedders_config</span><span class="o">=</span><span class="n">DEFAULT_EMBEDDERS_CONFIG</span><span class="p">,</span> <span class="n">vectorstore</span><span class="o">=</span><span class="s1">&#39;FAISS&#39;</span><span class="p">,</span> <span class="n">vectorstore_config</span><span class="o">=</span><span class="n">DEFAULT_VECTORSTORES_CONFIG</span><span class="p">)</span></code>
 
-<a href="#src.embed.Embedder.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -933,7 +963,7 @@ to embed.</p>
             <li>
               <b><code>embedders_config</code></b>
                   (<code>dict</code>, default:
-                      <code><span title="defaults.DEFAULT_EMBEDDERS_CONFIG">DEFAULT_EMBEDDERS_CONFIG</span></code>
+                      <code><span title="src.easy_ingest_text.defaults.DEFAULT_EMBEDDERS_CONFIG">DEFAULT_EMBEDDERS_CONFIG</span></code>
 )
               –
               <div class="doc-md-description">
@@ -954,7 +984,7 @@ options include 'FAISS', 'custom', or None.</p>
             <li>
               <b><code>vectorstore_config</code></b>
                   (<code>dict</code>, default:
-                      <code><span title="defaults.DEFAULT_VECTORSTORES_CONFIG">DEFAULT_VECTORSTORES_CONFIG</span></code>
+                      <code><span title="src.easy_ingest_text.defaults.DEFAULT_VECTORSTORES_CONFIG">DEFAULT_VECTORSTORES_CONFIG</span></code>
 )
               –
               <div class="doc-md-description">
@@ -991,7 +1021,7 @@ store.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
@@ -1074,7 +1104,7 @@ store.</p>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">embedder_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">embedder</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">embedders_config</span> <span class="o">=</span> <span class="n">embedders_config</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">set_embedder</span><span class="p">(</span><span class="n">embedder</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_embedder</span><span class="p">(</span><span class="n">embedder</span><span class="p">,</span> <span class="n">embedders_config</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">vectorstore</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_vectorstore</span><span class="p">(</span><span class="n">vectorstore</span><span class="p">,</span> <span class="n">vectorstore_config</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -1086,10 +1116,10 @@ store.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.embed_and_insert_dataset" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.embed_text.Embedder.embed_and_insert_dataset" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">embed_and_insert_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">detailed_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span></code>
 
-<a href="#src.embed.Embedder.embed_and_insert_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.embed_and_insert_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1159,7 +1189,7 @@ defaults to the instance's configuration if not provided.</p>
   <p>Uses multiprocessing to enhance performance.</p>
 </details>
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 87</span>
 <span class="normal"> 88</span>
 <span class="normal"> 89</span>
@@ -1244,10 +1274,10 @@ defaults to the instance's configuration if not provided.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.embed_and_insert_docs" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.embed_text.Embedder.embed_and_insert_docs" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">embed_and_insert_docs</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span></code>
 
-<a href="#src.embed.Embedder.embed_and_insert_docs" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.embed_and_insert_docs" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1268,7 +1298,7 @@ then returns the IDs, documents, and embeddings.</p>
         <ul class="first simple">
             <li>
               <b><code>docs</code></b>
-                  (<code><span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>]</code>)
+                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>]</code>)
               –
               <div class="doc-md-description">
                 <p>Documents to embed and insert.</p>
@@ -1291,7 +1321,7 @@ then returns the IDs, documents, and embeddings.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-<b><code>tuple</code></b>(                  <code><span title="typing.Tuple">Tuple</span>[<span title="typing.List">List</span>[str], <span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>], <span title="typing.List">List</span>[<span title="typing.List">List</span>[float]]]</code>
+<b><code>tuple</code></b>(                  <code><span title="typing.Tuple">Tuple</span>[<span title="typing.List">List</span>[str], <span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>], <span title="typing.List">List</span>[<span title="typing.List">List</span>[float]]]</code>
 )              –
               <div class="doc-md-description">
                 <p>A tuple containing lists of ids, docs, and their embeddings.</p>
@@ -1326,7 +1356,7 @@ then returns the IDs, documents, and embeddings.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
@@ -1364,7 +1394,7 @@ then returns the IDs, documents, and embeddings.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If the vectorstore instance is not set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_client</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_instance</span><span class="p">()</span>
     <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed_docs</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
     <span class="n">ids</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_embeddings</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ids</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">embeddings</span>
@@ -1377,10 +1407,10 @@ then returns the IDs, documents, and embeddings.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.embed_and_insert_files" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.embed_text.Embedder.embed_and_insert_files" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">embed_and_insert_files</span><span class="p">(</span><span class="n">file_paths</span><span class="p">)</span></code>
 
-<a href="#src.embed.Embedder.embed_and_insert_files" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.embed_and_insert_files" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1415,7 +1445,7 @@ vector store.</p>
     tuple: A tuple containing lists of ids, docs, and their embeddings.</p>
 
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
@@ -1452,7 +1482,7 @@ vector store.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple: A tuple containing lists of ids, docs, and their embeddings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_client</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_instance</span><span class="p">()</span>
     <span class="n">all_docs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">all_embeddings</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
@@ -1474,10 +1504,10 @@ vector store.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.embed_docs" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.embed_text.Embedder.embed_docs" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">embed_docs</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span></code>
 
-<a href="#src.embed.Embedder.embed_docs" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.embed_docs" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1497,7 +1527,7 @@ vector store.</p>
         <ul class="first simple">
             <li>
               <b><code>docs</code></b>
-                  (<code><span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>]</code>)
+                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>]</code>)
               –
               <div class="doc-md-description">
                 <p>Documents to embed.</p>
@@ -1532,7 +1562,7 @@ vector store.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
@@ -1583,10 +1613,10 @@ vector store.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.embed_files" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.embed_text.Embedder.embed_files" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">embed_files</span><span class="p">(</span><span class="n">file_paths</span><span class="p">)</span></code>
 
-<a href="#src.embed.Embedder.embed_files" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.embed_files" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1629,7 +1659,7 @@ vector store.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-<b><code>tuple</code></b>(                  <code><span title="typing.Tuple">Tuple</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>, <span title="typing.List">List</span>[<span title="typing.List">List</span>[float]]]</code>
+<b><code>tuple</code></b>(                  <code><span title="typing.Tuple">Tuple</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>, <span title="typing.List">List</span>[<span title="typing.List">List</span>[float]]]</code>
 )              –
               <div class="doc-md-description">
                 <p>A tuple containing lists of ids, docs, and their embeddings.</p>
@@ -1641,7 +1671,7 @@ vector store.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
@@ -1692,10 +1722,10 @@ vector store.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.insert_embeddings" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.embed_text.Embedder.insert_embeddings" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">insert_embeddings</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">)</span></code>
 
-<a href="#src.embed.Embedder.insert_embeddings" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.insert_embeddings" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1716,7 +1746,7 @@ and ensures all documents are unique based on their content hash.</p>
         <ul class="first simple">
             <li>
               <b><code>docs</code></b>
-                  (<code><span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>]</code>)
+                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>]</code>)
               –
               <div class="doc-md-description">
                 <p>Documents whose embeddings are to be
@@ -1749,7 +1779,7 @@ documents.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-<b><code>tuple</code></b>(                  <code><span title="typing.Tuple">Tuple</span>[<span title="typing.List">List</span>[str], <span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>], <span title="typing.List">List</span>[<span title="typing.List">List</span>[float]]]</code>
+<b><code>tuple</code></b>(                  <code><span title="typing.Tuple">Tuple</span>[<span title="typing.List">List</span>[str], <span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>], <span title="typing.List">List</span>[<span title="typing.List">List</span>[float]]]</code>
 )              –
               <div class="doc-md-description">
                 <p>A tuple containing lists of ids, docs, and their embeddings.</p>
@@ -1784,7 +1814,7 @@ documents.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">218</span>
 <span class="normal">219</span>
 <span class="normal">220</span>
@@ -1859,7 +1889,7 @@ documents.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If the vectorstore instance is not set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_client</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_verify_vectorstore_instance</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Saving </span><span class="si">%d</span><span class="s2"> embedded docs to vectorstore docs&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
     <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">document_hash</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)):</span>
@@ -1903,18 +1933,19 @@ documents.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.save_vectorstore" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">save_vectorstore</span><span class="p">()</span></code>
+<h3 id="src.easy_ingest_text.embed_text.Embedder.save_vectorstore_if_applicable" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">save_vectorstore_if_applicable</span><span class="p">()</span></code>
 
-<a href="#src.embed.Embedder.save_vectorstore" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.save_vectorstore_if_applicable" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
 
-      <p>Saves the current state of the vector store locally.</p>
+      <p>Saves the current state of the vector store locally if specified by the
+config.</p>
 
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
@@ -1927,18 +1958,36 @@ documents.</p>
 <span class="normal">283</span>
 <span class="normal">284</span>
 <span class="normal">285</span>
-<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_vectorstore</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_vectorstore_if_applicable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Saves the current state of the vector store locally.</span>
+<span class="sd">    Saves the current state of the vector store locally if specified by the</span>
+<span class="sd">    config.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_name</span> <span class="o">==</span> <span class="s2">&quot;FAISS&quot;</span><span class="p">:</span>
         <span class="n">save_local_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_config</span><span class="p">[</span><span class="s2">&quot;FAISS&quot;</span><span class="p">][</span>
             <span class="s2">&quot;save_local_config&quot;</span>
         <span class="p">]</span>
         <span class="k">if</span> <span class="n">save_local_config</span><span class="p">[</span><span class="s2">&quot;save_local&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_client</span><span class="o">.</span><span class="n">save_local</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_instance</span><span class="o">.</span><span class="n">save_local</span><span class="p">(</span>
                 <span class="n">save_local_config</span><span class="p">[</span><span class="s2">&quot;folder_path&quot;</span><span class="p">],</span>
                 <span class="n">save_local_config</span><span class="p">[</span><span class="s2">&quot;index_name&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">num_records</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vectorstore_instance</span><span class="o">.</span><span class="n">index_to_docstore_id</span>
+            <span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Successfully saved vectorstore of length </span><span class="si">%d</span><span class="s2"> to: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">num_records</span><span class="p">,</span>
+                <span class="n">save_local_config</span><span class="p">[</span><span class="s2">&quot;folder_path&quot;</span><span class="p">],</span>
             <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1949,10 +1998,10 @@ documents.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.set_embedder" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.embed_text.Embedder.set_embedder" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">set_embedder</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span></code>
 
-<a href="#src.embed.Embedder.set_embedder" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.set_embedder" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2019,23 +2068,21 @@ not implemented.</p>
 when required.</p>
               </div>
             </li>
+            <li>
+                  <code>ValueError</code>
+              –
+              <div class="doc-md-description">
+                <p>If embedder instance is set to None.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span>
@@ -2054,7 +2101,22 @@ when required.</p>
 <span class="normal">313</span>
 <span class="normal">314</span>
 <span class="normal">315</span>
-<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_embedder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Embeddings</span><span class="p">:</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_embedder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Embeddings</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Configures and initializes the embedder based on specified name and</span>
 <span class="sd">    configuration.</span>
@@ -2068,6 +2130,7 @@ when required.</p>
 <span class="sd">            not implemented.</span>
 <span class="sd">        ValueError: If embedder name is not recognized or none provided</span>
 <span class="sd">            when required.</span>
+<span class="sd">        ValueError: If embedder instance is set to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;custom&quot;</span><span class="p">:</span>
         <span class="n">error_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -2077,12 +2140,17 @@ when required.</p>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 
     <span class="n">embedder_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="n">embedder_instance</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;OpenAI&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">OpenAIEmbeddings</span><span class="p">(</span><span class="o">**</span><span class="n">embedder_config</span><span class="p">)</span>
+        <span class="n">embedder_instance</span> <span class="o">=</span> <span class="n">OpenAIEmbeddings</span><span class="p">(</span><span class="o">**</span><span class="n">embedder_config</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;HuggingFace&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">HuggingFaceEmbeddings</span><span class="p">(</span><span class="o">**</span><span class="n">embedder_config</span><span class="p">)</span>
+        <span class="n">embedder_instance</span> <span class="o">=</span> <span class="n">HuggingFaceEmbeddings</span><span class="p">(</span><span class="o">**</span><span class="n">embedder_config</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Embedding not recognized: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">embedder_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Embedder instance cannot be set to None.&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span> <span class="o">=</span> <span class="n">embedder_instance</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2092,10 +2160,10 @@ when required.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.embed.Embedder.set_vectorstore" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.embed_text.Embedder.set_vectorstore" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">set_vectorstore</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span></code>
 
-<a href="#src.embed.Embedder.set_vectorstore" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.embed_text.Embedder.set_vectorstore" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2168,23 +2236,8 @@ when required.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/embed.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
+              <summary>Source code in <code>src/easy_ingest_text/embed_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span>
 <span class="normal">336</span>
@@ -2219,7 +2272,22 @@ when required.</p>
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
-<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_vectorstore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_vectorstore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Configures and initializes the vector store based on specified name and</span>
 <span class="sd">    configuration.</span>

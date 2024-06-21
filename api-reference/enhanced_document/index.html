@@ -63,23 +63,23 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">EnhancedDocument</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#src.enhanced_document">enhanced_document</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.enhanced_document">enhanced_document</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#src.enhanced_document.EnhancedDocument">EnhancedDocument</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#src.enhanced_document.EnhancedDocument.content_hash">content_hash</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.content_hash">content_hash</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.enhanced_document.EnhancedDocument.document_hash">document_hash</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.document_hash">document_hash</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.enhanced_document.EnhancedDocument.metadata_hash">metadata_hash</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.metadata_hash">metadata_hash</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.enhanced_document.EnhancedDocument.source">source</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.source">source</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.enhanced_document.EnhancedDocument.calculate_hashes_and_source">calculate_hashes_and_source</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.calculate_hashes_and_source">calculate_hashes_and_source</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.enhanced_document.EnhancedDocument.from_document">from_document</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.from_document">from_document</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.enhanced_document.EnhancedDocument.to_document">to_document</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.to_document">to_document</a>
     </li>
         </ul>
     </li>
@@ -117,7 +117,7 @@
 
 
 
-<a id="src.enhanced_document"></a>
+<a id="src.easy_ingest_text.enhanced_document"></a>
     <div class="doc doc-contents first">
 
       <p>Module contains logic for indexing documents into vector stores.</p>
@@ -137,11 +137,11 @@
 
 
 
-<h2 id="src.enhanced_document.EnhancedDocument" class="doc doc-heading">
+<h2 id="src.easy_ingest_text.enhanced_document.EnhancedDocument" class="doc doc-heading">
             <code>EnhancedDocument</code>
 
 
-<a href="#src.enhanced_document.EnhancedDocument" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#src.easy_ingest_text.enhanced_document.EnhancedDocument" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents ">
@@ -152,7 +152,7 @@
       <p>A hashed document with a unique ID.</p>
 
               <details class="quote">
-                <summary>Source code in <code>src/enhanced_document.py</code></summary>
+                <summary>Source code in <code>src/easy_ingest_text/enhanced_document.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 33</span>
 <span class="normal"> 34</span>
 <span class="normal"> 35</span>
@@ -371,14 +371,14 @@
 
 
 
-<h3 id="src.enhanced_document.EnhancedDocument.content_hash" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.enhanced_document.EnhancedDocument.content_hash" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">content_hash</span><span class="p">:</span> <span class="nb">str</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#src.enhanced_document.EnhancedDocument.content_hash" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.content_hash" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -392,14 +392,14 @@
 
 
 
-<h3 id="src.enhanced_document.EnhancedDocument.document_hash" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.enhanced_document.EnhancedDocument.document_hash" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">document_hash</span><span class="p">:</span> <span class="nb">str</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#src.enhanced_document.EnhancedDocument.document_hash" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.document_hash" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -413,14 +413,14 @@
 
 
 
-<h3 id="src.enhanced_document.EnhancedDocument.metadata_hash" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.enhanced_document.EnhancedDocument.metadata_hash" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">metadata_hash</span><span class="p">:</span> <span class="nb">str</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#src.enhanced_document.EnhancedDocument.metadata_hash" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.metadata_hash" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -434,14 +434,14 @@
 
 
 
-<h3 id="src.enhanced_document.EnhancedDocument.source" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.enhanced_document.EnhancedDocument.source" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">source</span><span class="p">:</span> <span class="nb">str</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#src.enhanced_document.EnhancedDocument.source" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.source" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -456,10 +456,10 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.enhanced_document.EnhancedDocument.calculate_hashes_and_source" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.enhanced_document.EnhancedDocument.calculate_hashes_and_source" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">calculate_hashes_and_source</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></code>
 
-<a href="#src.enhanced_document.EnhancedDocument.calculate_hashes_and_source" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.calculate_hashes_and_source" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -469,7 +469,7 @@
 to make it easier to query on them if required.</p>
 
             <details class="quote">
-              <summary>Source code in <code>src/enhanced_document.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/enhanced_document.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 45</span>
 <span class="normal"> 46</span>
 <span class="normal"> 47</span>
@@ -602,14 +602,14 @@ to make it easier to query on them if required.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.enhanced_document.EnhancedDocument.from_document" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.enhanced_document.EnhancedDocument.from_document" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">from_document</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">uid</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-<a href="#src.enhanced_document.EnhancedDocument.from_document" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.from_document" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -617,7 +617,7 @@ to make it easier to query on them if required.</p>
       <p>Create a HashedDocument from a Document.</p>
 
             <details class="quote">
-              <summary>Source code in <code>src/enhanced_document.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/enhanced_document.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
@@ -646,10 +646,10 @@ to make it easier to query on them if required.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.enhanced_document.EnhancedDocument.to_document" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.enhanced_document.EnhancedDocument.to_document" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">to_document</span><span class="p">()</span></code>
 
-<a href="#src.enhanced_document.EnhancedDocument.to_document" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.enhanced_document.EnhancedDocument.to_document" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -657,7 +657,7 @@ to make it easier to query on them if required.</p>
       <p>Return a Document object.</p>
 
             <details class="quote">
-              <summary>Source code in <code>src/enhanced_document.py</code></summary>
+              <summary>Source code in <code>src/easy_ingest_text/enhanced_document.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>

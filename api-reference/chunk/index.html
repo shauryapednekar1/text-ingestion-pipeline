@@ -57,19 +57,19 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Chunker</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#src.chunk">chunk</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.chunk_text">chunk_text</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#src.chunk.Chunker">Chunker</a>
+    <li class="toctree-l2"><a class="reference internal" href="#src.easy_ingest_text.chunk_text.Chunker">Chunker</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#src.chunk.Chunker.__init__">__init__</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.chunk_text.Chunker.__init__">__init__</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.chunk.Chunker.chunk_dataset">chunk_dataset</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.chunk_text.Chunker.chunk_dataset">chunk_dataset</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.chunk.Chunker.chunk_docs">chunk_docs</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.chunk_text.Chunker.chunk_docs">chunk_docs</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.chunk.Chunker.chunk_file">chunk_file</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.chunk_text.Chunker.chunk_file">chunk_file</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#src.chunk.Chunker.get_splitter">get_splitter</a>
+    <li class="toctree-l3"><a class="reference internal" href="#src.easy_ingest_text.chunk_text.Chunker.get_splitter">get_splitter</a>
     </li>
         </ul>
     </li>
@@ -113,7 +113,7 @@
 
 
 
-<a id="src.chunk"></a>
+<a id="src.easy_ingest_text.chunk_text"></a>
     <div class="doc doc-contents first">
 
 
@@ -131,23 +131,25 @@
 
 
 
-<h2 id="src.chunk.Chunker" class="doc doc-heading">
+<h2 id="src.easy_ingest_text.chunk_text.Chunker" class="doc doc-heading">
             <code>Chunker</code>
 
 
-<a href="#src.chunk.Chunker" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#src.easy_ingest_text.chunk_text.Chunker" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents ">
 
 
       <p>Chunk documents.</p>
-<p>Potential functions to override if implementing a custom Chunker class:
-- <code>chunk_docs()</code>: the logic for how a document is is chunked.
-- <code>get_splitter()</code>: the logic for which splitter to use.</p>
+<p>Potential functions to override if implementing a custom Chunker class:</p>
+<ul>
+<li><code>chunk_docs()</code>: the logic for how a document is is chunked.</li>
+<li><code>get_splitter()</code>: the logic for which splitter to use.</li>
+</ul>
 
               <details class="quote">
-                <summary>Source code in <code>src/chunk.py</code></summary>
+                <summary>Source code in <code>src/easy_ingest_text/chunk_text.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 15</span>
 <span class="normal"> 16</span>
 <span class="normal"> 17</span>
@@ -306,10 +308,12 @@
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
-<span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Chunker</span><span class="p">:</span>
+<span class="normal">173</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Chunker</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Chunk documents.</span>
 
 <span class="sd">    Potential functions to override if implementing a custom Chunker class:</span>
+
 <span class="sd">    - `chunk_docs()`: the logic for how a document is is chunked.</span>
 <span class="sd">    - `get_splitter()`: the logic for which splitter to use.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -483,10 +487,10 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.chunk.Chunker.__init__" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.chunk_text.Chunker.__init__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">splitter</span><span class="o">=</span><span class="s1">&#39;recursive&#39;</span><span class="p">,</span> <span class="n">splitter_config</span><span class="o">=</span><span class="n">DEFAULT_SPLITTERS_CONFIG</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
 
-<a href="#src.chunk.Chunker.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.chunk_text.Chunker.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -519,7 +523,7 @@ and multiprocessing settings.</p>
             <li>
               <b><code>splitter_config</code></b>
                   (<code><span title="typing.Dict">Dict</span></code>, default:
-                      <code><span title="defaults.DEFAULT_SPLITTERS_CONFIG">DEFAULT_SPLITTERS_CONFIG</span></code>
+                      <code><span title="src.easy_ingest_text.defaults.DEFAULT_SPLITTERS_CONFIG">DEFAULT_SPLITTERS_CONFIG</span></code>
 )
               –
               <div class="doc-md-description">
@@ -566,9 +570,8 @@ splitter.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/chunk.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
-<span class="normal">26</span>
+              <summary>Source code in <code>src/easy_ingest_text/chunk_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -596,7 +599,8 @@ splitter.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">splitter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;recursive&quot;</span><span class="p">,</span>
     <span class="n">splitter_config</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">DEFAULT_SPLITTERS_CONFIG</span><span class="p">,</span>
@@ -635,10 +639,10 @@ splitter.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.chunk.Chunker.chunk_dataset" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.chunk_text.Chunker.chunk_dataset" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">chunk_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">detailed_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
-<a href="#src.chunk.Chunker.chunk_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.chunk_text.Chunker.chunk_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -726,9 +730,8 @@ defaults to the instance's num_workers if not provided.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/chunk.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
-<span class="normal">57</span>
+              <summary>Source code in <code>src/easy_ingest_text/chunk_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
@@ -768,7 +771,8 @@ defaults to the instance's num_workers if not provided.</p>
 <span class="normal">94</span>
 <span class="normal">95</span>
 <span class="normal">96</span>
-<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">chunk_dataset</span><span class="p">(</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">chunk_dataset</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">detailed_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -819,10 +823,10 @@ defaults to the instance's num_workers if not provided.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.chunk.Chunker.chunk_docs" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.chunk_text.Chunker.chunk_docs" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">chunk_docs</span><span class="p">(</span><span class="n">raw_docs</span><span class="p">)</span></code>
 
-<a href="#src.chunk.Chunker.chunk_docs" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.chunk_text.Chunker.chunk_docs" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -843,7 +847,7 @@ EnhancedDocuments.</p>
         <ul class="first simple">
             <li>
               <b><code>raw_docs</code></b>
-                  (<code><span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>]</code>)
+                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>]</code>)
               –
               <div class="doc-md-description">
                 <p>List of documents to be chunked.</p>
@@ -866,7 +870,7 @@ EnhancedDocuments.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-                  <code><span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>]</code>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>]</code>
               –
               <div class="doc-md-description">
                 <p>List[EnhancedDocument]: A list of chunked documents.</p>
@@ -878,9 +882,8 @@ EnhancedDocuments.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/chunk.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
-<span class="normal">127</span>
+              <summary>Source code in <code>src/easy_ingest_text/chunk_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
@@ -898,7 +901,8 @@ EnhancedDocuments.</p>
 <span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span>
-<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">chunk_docs</span><span class="p">(</span>
+<span class="normal">145</span>
+<span class="normal">146</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">chunk_docs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">raw_docs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EnhancedDocument</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EnhancedDocument</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -927,10 +931,10 @@ EnhancedDocuments.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.chunk.Chunker.chunk_file" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.chunk_text.Chunker.chunk_file" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">chunk_file</span><span class="p">(</span><span class="n">save_chunks</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span></code>
 
-<a href="#src.chunk.Chunker.chunk_file" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.chunk_text.Chunker.chunk_file" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -990,7 +994,7 @@ is True.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-                  <code><span title="typing.List">List</span>[<span title="enhanced_document.EnhancedDocument">EnhancedDocument</span>]</code>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="src.easy_ingest_text.enhanced_document.EnhancedDocument" href="../enhanced_document/#src.easy_ingest_text.enhanced_document.EnhancedDocument">EnhancedDocument</a>]</code>
               –
               <div class="doc-md-description">
                 <p>List[EnhancedDocument]: A list of chunked documents.</p>
@@ -1002,9 +1006,8 @@ is True.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/chunk.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
-<span class="normal">100</span>
+              <summary>Source code in <code>src/easy_ingest_text/chunk_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
@@ -1028,7 +1031,8 @@ is True.</p>
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
-<span class="normal">124</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">chunk_file</span><span class="p">(</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">chunk_file</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">save_chunks</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EnhancedDocument</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1063,10 +1067,10 @@ is True.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.chunk.Chunker.get_splitter" class="doc doc-heading">
+<h3 id="src.easy_ingest_text.chunk_text.Chunker.get_splitter" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">get_splitter</span><span class="p">(</span><span class="n">splitter</span><span class="p">)</span></code>
 
-<a href="#src.chunk.Chunker.get_splitter" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#src.easy_ingest_text.chunk_text.Chunker.get_splitter" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1152,9 +1156,8 @@ not implemented.</p>
   </tbody>
 </table>
             <details class="quote">
-              <summary>Source code in <code>src/chunk.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
-<span class="normal">148</span>
+              <summary>Source code in <code>src/easy_ingest_text/chunk_text.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span>
@@ -1179,7 +1182,8 @@ not implemented.</p>
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
-<span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">splitter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TextSplitter</span><span class="p">:</span>
+<span class="normal">173</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">splitter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TextSplitter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves the appropriate document splitter based on the specified type.</span>
 
