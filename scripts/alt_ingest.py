@@ -1,13 +1,12 @@
 import concurrent.futures
 import os
 import queue
-from chunk import Chunker
 from typing import List
 
-from tqdm import tqdm
-
+from chunk_text import Chunker
 from embed import Embedder
 from load import Loader
+from tqdm import tqdm
 from utils import get_files_from_dir, save_docs_to_file
 
 

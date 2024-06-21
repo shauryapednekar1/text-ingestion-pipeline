@@ -1,6 +1,6 @@
 # Usage Guide
 
-See the home page for more info on how the design is packaged.
+See the [README](https://github.com/shauryapednekar1/text-ingestion-pipeline/tree/user/shaurya/add-load-framework) for more info on how the design is packaged.
 
 ### Loading a textual dataset into a vectorstore
 

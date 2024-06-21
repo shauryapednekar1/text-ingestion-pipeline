@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src.chunk import Chunker, EnhancedDocument
+from easy_ingest_text.chunk_text import Chunker, EnhancedDocument
 
 
 class TestChunker(unittest.TestCase):
@@ -40,14 +40,15 @@ class TestChunker(unittest.TestCase):
         with self.assertRaises(ValueError):
             Chunker("invalid_splitter", self.splitter_config)
 
-    @patch("src.chunk.save_docs_to_file")
-    @patch("src.chunk.logging")
+    @patch("easy_ingest_text.chunk_text.save_docs_to_file")
+    @patch("easy_ingest_text.chunk_text.logging")
     def test_chunk_file(self, mock_logging, mock_save_docs_to_file):
         """Test the chunking of a single file."""
         documents = [self.enhanced_doc1]
         chunked_documents = [self.enhanced_doc2, self.enhanced_doc3]
         with patch(
-            "src.chunk.load_docs_from_jsonl", return_value=documents
+            "easy_ingest_text.chunk_text.load_docs_from_jsonl",
+            return_value=documents,
         ), patch.object(Chunker, "chunk_docs", return_value=chunked_documents):
             chunker = Chunker("recursive", self.splitter_config, num_workers=5)
             result = chunker.chunk_file(True, self.output_dir, "file1.jsonl")

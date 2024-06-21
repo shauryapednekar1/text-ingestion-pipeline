@@ -2,7 +2,6 @@ import logging
 import multiprocessing as mp
 import os
 import pickle
-from chunk import Chunker
 from functools import partial
 from itertools import chain, islice
 from multiprocessing import Pool
@@ -10,10 +9,11 @@ from typing import List, Optional
 
 from tqdm import tqdm
 
-from embed import Embedder
-from enhanced_document import EnhancedDocument
-from load import Loader
-from utils import get_files_from_dir, save_docs_to_file
+from .chunk_text import Chunker
+from .embed_text import Embedder
+from .enhanced_document import EnhancedDocument
+from .load_text import Loader
+from .utils import get_files_from_dir, save_docs_to_file
 
 
 class Ingester:

@@ -7,9 +7,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.base import TextSplitter
 from tqdm import tqdm
 
-from defaults import DEFAULT_SPLITTERS_CONFIG
-from enhanced_document import EnhancedDocument
-from utils import get_files_from_dir, load_docs_from_jsonl, save_docs_to_file
+from .defaults import DEFAULT_SPLITTERS_CONFIG
+from .enhanced_document import EnhancedDocument
+from .utils import get_files_from_dir, load_docs_from_jsonl, save_docs_to_file
 
 
 class Chunker:

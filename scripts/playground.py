@@ -1,16 +1,22 @@
+import sys
+
+print(sys.path)
+
 import json
 import logging
 import pickle
-from chunk import Chunker
 from typing import Iterable, List
 
 import pudb
 
-from alt_ingest import quick_ingest
-from embed import Embedder
-from enhanced_document import EnhancedDocument
-from ingest import Ingester
-from load import Loader
+from easy_ingest_text.chunk_text import Chunker
+from easy_ingest_text.embed_text import Embedder
+from easy_ingest_text.enhanced_document import EnhancedDocument
+from easy_ingest_text.ingest_text import Ingester
+from easy_ingest_text.load_text import Loader
+
+# from alt_ingest import quick_ingest
+
 
 # os.environ['OPENAI_API_KEY'] = getpass.getpass('OpenAI API Key:')
 

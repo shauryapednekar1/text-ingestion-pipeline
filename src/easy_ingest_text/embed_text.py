@@ -12,9 +12,9 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import OpenAIEmbeddings
 from tqdm import tqdm
 
-from defaults import DEFAULT_EMBEDDERS_CONFIG, DEFAULT_VECTORSTORES_CONFIG
-from enhanced_document import EnhancedDocument
-from utils import get_files_from_dir, load_docs_from_jsonl
+from .defaults import DEFAULT_EMBEDDERS_CONFIG, DEFAULT_VECTORSTORES_CONFIG
+from .enhanced_document import EnhancedDocument
+from .utils import get_files_from_dir, load_docs_from_jsonl
 
 # HACK(STP): Suppress warning about a deprecated arg. The fix has been merged.
 # See https://github.com/huggingface/transformers/pull/30620/files.
@@ -80,7 +80,7 @@ class Embedder:
 
         self.embedder_name: str = embedder
         self.embedders_config = embedders_config
-        self.set_embedder(embedder, config)
+        self.set_embedder(embedder, embedders_config)
         if vectorstore is not None:
             self.set_vectorstore(vectorstore, vectorstore_config)
 
@@ -299,6 +299,7 @@ class Embedder:
                 not implemented.
             ValueError: If embedder name is not recognized or none provided
                 when required.
+            ValueError: If embedder instance is set to None.
         """
         if name == "custom":
             error_message = """
@@ -308,12 +309,17 @@ class Embedder:
             raise NotImplementedError(error_message)
 
         embedder_config = config[name]
+        embedder_instance = None
         if name == "OpenAI":
-            return OpenAIEmbeddings(**embedder_config)
+            embedder_instance = OpenAIEmbeddings(**embedder_config)
         elif name == "HuggingFace":
-            return HuggingFaceEmbeddings(**embedder_config)
+            embedder_instance = HuggingFaceEmbeddings(**embedder_config)
         else:
             raise ValueError("Embedding not recognized: %s", name)
+
+        if embedder_instance is None:
+            raise ValueError("Embedder instance cannot be set to None.")
+        self.embedder = embedder_instance
 
     def set_vectorstore(self, name: str, config: Dict):
         """

@@ -5,6 +5,9 @@ foo**
 .DS_Store
 _*
 site
+dist
+faiss_index
+*.pytest_cache
 
 # temp
 unzipped_data

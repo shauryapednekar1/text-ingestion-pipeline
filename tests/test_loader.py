@@ -4,8 +4,9 @@ from unittest.mock import MagicMock, mock_open, patch
 
 from langchain_core.documents import Document
 
-# from src.enhanced_document import EnhancedDocument
-from src.load import EnhancedDocument, Loader
+# from enhanced_document import EnhancedDocument
+# from easy_ingest_text.load_text import EnhancedDocument, Loader
+from easy_ingest_text.load_text import EnhancedDocument, Loader
 
 
 class TestLoader(unittest.TestCase):
@@ -46,9 +47,9 @@ class TestLoader(unittest.TestCase):
         self.assertIn("CSVLoader", self.loader.autoloaders)
         self.assertNotIn("otherLoader", self.loader.autoloaders)
 
-    @patch("src.load.os.path")
-    @patch("src.load.os.makedirs")
-    @patch("src.load.unzip_recursively")
+    @patch("easy_ingest_text.load_text.os.path")
+    @patch("easy_ingest_text.load_text.os.makedirs")
+    @patch("easy_ingest_text.load_text.unzip_recursively")
     def test_unzip_dataset(self, mock_unzip, mock_makedirs, mock_path):
         """Tests the functionality of unzipping a dataset.
 
@@ -65,8 +66,8 @@ class TestLoader(unittest.TestCase):
         mock_unzip.assert_called_once()
         self.assertEqual(directory, "unzipped/dataset")
 
-    @patch("src.load.UnstructuredFileLoader")
-    @patch("src.load.JSONLoader")
+    @patch("easy_ingest_text.load_text.UnstructuredFileLoader")
+    @patch("easy_ingest_text.load_text.JSONLoader")
     def test_file_to_docs(self, MockJSONLoader, MockUnstructuredLoader):
         """Tests the transformation of a file into EnhancedDocument objects.
 

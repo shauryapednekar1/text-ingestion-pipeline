@@ -7,7 +7,7 @@ from typing import List
 from langchain_core.documents import Document
 from smart_open import open
 
-from enhanced_document import EnhancedDocument
+from .enhanced_document import EnhancedDocument
 
 
 def unzip_recursively(source_zip, target_dir, max_depth=100):

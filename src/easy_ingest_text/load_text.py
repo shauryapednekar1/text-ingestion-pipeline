@@ -12,9 +12,9 @@ from langchain_community.document_loaders import (
 from langchain_core.documents import Document
 from tqdm import tqdm
 
-from defaults import DEFAULT_AUTOLOADER_CONFIG
-from enhanced_document import EnhancedDocument
-from utils import get_files_from_dir, save_docs_to_file, unzip_recursively
+from .defaults import DEFAULT_AUTOLOADER_CONFIG
+from .enhanced_document import EnhancedDocument
+from .utils import get_files_from_dir, save_docs_to_file, unzip_recursively
 
 
 class Loader:
