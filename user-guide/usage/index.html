@@ -115,9 +115,9 @@ ingester.ingest_dataset(
     input_dir=&quot;financial_dataset.zip&quot;,
     is_zipped=True,
     save_intermediate_docs=True,
-    output_dir=&quot;test_output&quot;,
+    output_dir=&quot;financial_documents_output&quot;,
     detailed_progress=True,
-    batch_size=100,
+    chunk_batch_size=100,
     max_files=500,
 )
 </code></pre>
@@ -205,10 +205,10 @@ ingester = Ingester(embedder=embedder)
 ingester.ingest_dataset(
     input_dir=&quot;financial_dataset&quot;,
     save_intermediate_docs=True,
-    output_dir=&quot;test_output&quot;,
+    output_dir=&quot;financial_documents_output&quot;,
     detailed_progress=True,
-    batch_size=100,
-    max_files=1000,
+    chunk_batch_size=100,
+    max_files=500,
 )
 </code></pre>
               

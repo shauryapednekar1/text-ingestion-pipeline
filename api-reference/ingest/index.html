@@ -271,7 +271,15 @@
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Ingester</span><span class="p">:</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Ingester</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ingest files into a vectorstore.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -305,7 +313,8 @@
         <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">max_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">detailed_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># in number of files</span>
+        <span class="n">embed_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>  <span class="c1"># in number of docs</span>
+        <span class="n">chunk_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># in number of files</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes a dataset through specified stages: loading, chunking, and</span>
@@ -322,7 +331,10 @@
 <span class="sd">            num_workers (int): Number of worker processes to use.</span>
 <span class="sd">            max_files (Optional[int]): Max number of files to process.</span>
 <span class="sd">            detailed_progress (bool): Whether to show detailed progress.</span>
-<span class="sd">            batch_size (int): Number of files to process in each batch.</span>
+<span class="sd">            embed_batch_size (int): Number of documents to process in each</span>
+<span class="sd">                batch for embedding.</span>
+<span class="sd">            chunk_batch_size (int): Number of files to process in each batch</span>
+<span class="sd">                for chunking.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">is_zipped</span><span class="p">:</span>
             <span class="n">directory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">unzip_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">)</span>
@@ -348,8 +360,10 @@
                 <span class="p">)</span>
                 <span class="n">batched_docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">i</span> <span class="o">-</span> <span class="n">prev_counter</span> <span class="o">&gt;=</span> <span class="n">batch_size</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span><span class="n">batched_docs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">batched_docs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">embed_batch_size</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span>
+                        <span class="n">batched_docs</span><span class="p">,</span> <span class="n">embed_batch_size</span>
+                    <span class="p">)</span>
                     <span class="n">batched_docs</span> <span class="o">=</span> <span class="p">[]</span>
 
                     <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">prev_counter</span><span class="p">)</span>
@@ -359,7 +373,9 @@
                     <span class="k">break</span>
 
             <span class="k">if</span> <span class="n">batched_docs</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span><span class="n">batched_docs</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span>
+                    <span class="n">batched_docs</span><span class="p">,</span> <span class="n">embed_batch_size</span>
+                <span class="p">)</span>
 
             <span class="c1"># NOTE(STP): Save the vectorstore to disk if applicable.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">save_vectorstore_if_applicable</span><span class="p">()</span>
@@ -530,7 +546,7 @@ embedding.</p>
 
 
 <h3 id="src.easy_ingest_text.ingest_text.Ingester.ingest_dataset" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">ingest_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">is_zipped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_intermediate_docs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">ingest_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">is_zipped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_intermediate_docs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">embed_batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">chunk_batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></code>
 
 <a href="#src.easy_ingest_text.ingest_text.Ingester.ingest_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -632,13 +648,25 @@ saved.</p>
               </div>
             </li>
             <li>
-              <b><code>batch_size</code></b>
+              <b><code>embed_batch_size</code></b>
+                  (<code>int</code>, default:
+                      <code>1000</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Number of documents to process in each
+batch for embedding.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>chunk_batch_size</code></b>
                   (<code>int</code>, default:
                       <code>100</code>
 )
               –
               <div class="doc-md-description">
-                <p>Number of files to process in each batch.</p>
+                <p>Number of files to process in each batch
+for chunking.</p>
               </div>
             </li>
         </ul>
@@ -715,7 +743,15 @@ saved.</p>
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
-<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">ingest_dataset</span><span class="p">(</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">ingest_dataset</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">is_zipped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -725,7 +761,8 @@ saved.</p>
     <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="n">max_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">detailed_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># in number of files</span>
+    <span class="n">embed_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>  <span class="c1"># in number of docs</span>
+    <span class="n">chunk_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># in number of files</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Processes a dataset through specified stages: loading, chunking, and</span>
@@ -742,7 +779,10 @@ saved.</p>
 <span class="sd">        num_workers (int): Number of worker processes to use.</span>
 <span class="sd">        max_files (Optional[int]): Max number of files to process.</span>
 <span class="sd">        detailed_progress (bool): Whether to show detailed progress.</span>
-<span class="sd">        batch_size (int): Number of files to process in each batch.</span>
+<span class="sd">        embed_batch_size (int): Number of documents to process in each</span>
+<span class="sd">            batch for embedding.</span>
+<span class="sd">        chunk_batch_size (int): Number of files to process in each batch</span>
+<span class="sd">            for chunking.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">is_zipped</span><span class="p">:</span>
         <span class="n">directory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">unzip_dataset</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">)</span>
@@ -768,8 +808,10 @@ saved.</p>
             <span class="p">)</span>
             <span class="n">batched_docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">i</span> <span class="o">-</span> <span class="n">prev_counter</span> <span class="o">&gt;=</span> <span class="n">batch_size</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span><span class="n">batched_docs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">batched_docs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">embed_batch_size</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span>
+                    <span class="n">batched_docs</span><span class="p">,</span> <span class="n">embed_batch_size</span>
+                <span class="p">)</span>
                 <span class="n">batched_docs</span> <span class="o">=</span> <span class="p">[]</span>
 
                 <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">prev_counter</span><span class="p">)</span>
@@ -779,7 +821,9 @@ saved.</p>
                 <span class="k">break</span>
 
         <span class="k">if</span> <span class="n">batched_docs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span><span class="n">batched_docs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">embed_and_insert_docs</span><span class="p">(</span>
+                <span class="n">batched_docs</span><span class="p">,</span> <span class="n">embed_batch_size</span>
+            <span class="p">)</span>
 
         <span class="c1"># NOTE(STP): Save the vectorstore to disk if applicable.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedder</span><span class="o">.</span><span class="n">save_vectorstore_if_applicable</span><span class="p">()</span>
@@ -894,15 +938,7 @@ provided.</p>
 </table>
             <details class="quote">
               <summary>Source code in <code>src/easy_ingest_text/ingest_text.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
@@ -931,7 +967,15 @@ provided.</p>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_and_chunk_file</span><span class="p">(</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_and_chunk_file</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">save_intermediate_docs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="n">output_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
