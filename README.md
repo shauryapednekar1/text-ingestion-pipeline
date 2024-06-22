@@ -61,14 +61,14 @@ While the right level of abstraction when ingesting textual data into a vectorst
 
 Additionally, we make the assumption that the usual access pattern here is that we would want to use the same loading, chunking, and embedding mechanism across multiple datasets within a given application, since this would provide consistency for downstream applications. With this assumption, it makes sense to have a `Loader`, `Chunker`, and `Embedder` class. Each instance of the class would share state information like how it should load, chunk, and embed data. We also have an `Ingester` class, which is responsible for transferring data through the instances of the three classes mentioned earlier.
 
-Another layer of abstraction that proves useful is that of a `EnhancedDocument` [^3], which is essentially a piece of text accompanied by some additional information. The key information any `Document` must have is the following:
+Another layer of abstraction that proves useful is that of a `EnhancedDocument` [^3], which is essentially a piece of text accompanied by some additional information. The key information any `EnhancedDocument` must have is the following:
 
-a. `source`: the path of the file. We assume the dataset is static (i.e. the raw data does not change).
-b. `page_content`: the actual text of the file.
-c. `metadata`: additional information about the document. Often useful for querying within the context of knowledge graphs.
-d. `document_hash`,  `content_hash`, `metadata_hash`: hashes of the content, metadata, and overall document. Useful when checking uniqueness.
+1. `source`: the path of the file. We assume the dataset is static (i.e. the raw data does not change).
+2. `page_content`: the actual text of the file.
+3. `metadata`: additional information about the document. Often useful for querying within the context of knowledge graphs.
+4. `document_hash`,  `content_hash`, `metadata_hash`: hashes of the content, metadata, and overall document. Useful for uniqueness checks.
 
-Since there is a one-to-many relationship between a `EnhancedDocument` and its chunks - the chunk retains the original document's source and metadata - the *type* of a chunk is the same as the type of an "unchunked" document. Hence, the package treats chunks data as `EnhancedDocuments` too.
+Since there is a one-to-many relationship between a `EnhancedDocument` and its chunks - the chunk retains the original document's `source` and `metadata` - the *type* of a chunk is the same as the type of an "unchunked" document. Hence, the package treats chunks data as `EnhancedDocuments` too.
 
 Each class performs actions related to its position in the ingestion pipeline. The unit of information being transferred between classes is an `EnhancedDocument`. 
 
