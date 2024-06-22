@@ -96,10 +96,16 @@
               
                 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
 <h2 id="using-pip">Using <code>pip</code><a class="headerlink" href="#using-pip" title="Permanent link">&para;</a></h2>
-<pre><code class="language-bash">pip install ...
+<pre><code class="language-bash">pip install -i https://test.pypi.org/simple/ easy-ingest-text
 </code></pre>
+<p>Note: The package is currently published to <code>test.pypi</code>, so it requires the additional flag indicating this.</p>
 <h2 id="from-the-source">From the source<a class="headerlink" href="#from-the-source" title="Permanent link">&para;</a></h2>
-<pre><code class="language-bash">git clone ...
+<p>You can install this package in editable mode using the following commands.</p>
+<pre><code class="language-bash">git clone git@github.com:shauryapednekar1/text-ingestion-pipeline.git
+cd text-ingestion-pipeline
+# Check out the branch you would like to install.
+git checkout user/shaurya/add-load-framework
+pip install -e .
 </code></pre>
               
             </div>
