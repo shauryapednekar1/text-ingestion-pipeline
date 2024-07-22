@@ -1,0 +1,27 @@
+venv
+data
+__pycache__
+foo**
+.DS_Store
+site/_*
+site
+dist
+faiss_index
+**venv**
+test_*
+
+# temp
+unzipped_data
+**financial_dataset**
+datasets
+raw_documents
+unzipped
+chunked_documents
+**.sqlite3
+**.zip
+**.vscode
+test_output
+**.mypy_cache
+**.pkl
+**.faiss
+**.prof

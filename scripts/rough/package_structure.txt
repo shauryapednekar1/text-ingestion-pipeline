@@ -1,0 +1,20 @@
+├── playground
+│   ├── alt_ingest.py
+│   └── playground.py
+├── src
+│   ├── easy_ingest_text
+│   │   ├── chunk.py
+│   │   ├── defaults.py
+│   │   ├── embed.py
+│   │   ├── enhanced_document.py
+│   │   ├── ingest.py
+│   │   ├── __init__.py
+│   │   ├── load.py
+│   │   ├── __pycache__
+│   │   └── utils.py
+│   └── __pycache__
+├── tests
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── test_chunker.py
+│   └── test_loader.py
