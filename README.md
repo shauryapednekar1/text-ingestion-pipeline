@@ -1,6 +1,6 @@
 > [!NOTE]  
 > This README contains information on the high level system design for this package.
-> The user guide and API reference can be found [here](https://shauryapednekar1.github.io/text-ingestion-pipeline/).
+> The user guide and API reference can be found [here](https://shauryapednekar.github.io/text-ingestion-pipeline/).
 
 ### Goal
 The goal of this project was to design and implement a python package that lets
